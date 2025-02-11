@@ -13,7 +13,8 @@
   "scripts": {
     "start": "electron .",
     "build": "webpack --config webpack.renderer.config.js && tsc",
-    "package": "electron-builder"
+    "package": "electron-builder",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,html,css,scss,md}\""
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
