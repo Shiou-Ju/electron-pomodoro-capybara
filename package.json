@@ -6,7 +6,10 @@
   "author": "Bamboo <75402531+Shiou-Ju@users.noreply.github.com>",
   "license": "MIT",
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "electron": "^34.1.1",
+    "framer-motion": "^12.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -22,6 +25,7 @@
     "@types/react-dom": "^19.0.3",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
