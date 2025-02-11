@@ -10,7 +10,16 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
     },
+    icon: path.join(__dirname, '../public/assets/capybara-longBreak.png')
   });
+
+  // TODO: 註解掉測試 release 是否有問題
+  // // 新增：設定應用程式圖示
+  const isMac = process.platform === 'darwin';
+  const isDev = process.env.NODE_ENV === 'development';
+  if (isMac && isDev) {
+    app.dock.setIcon(path.resolve(__dirname, '../public/assets/capybara-longBreak.png'));
+  }
 
   // 開發環境使用
   if (process.env.NODE_ENV === 'development') {

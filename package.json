@@ -8,16 +8,19 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "electron": "^34.1.1",
     "framer-motion": "^12.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "scripts": {
-    "start": "electron .",
+    "start": "cross-env NODE_ENV=development electron .",
     "build": "webpack --config webpack.renderer.config.js && tsc",
-    "package": "electron-builder",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,html,css,scss,md}\""
+    "package": "yarn build && electron-builder build --mac --win --linux",
+    "package:mac": "yarn build && electron-builder build --mac",
+    "package:win": "yarn build && electron-builder build --win",
+    "package:linux": "yarn build && electron-builder build --linux",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,html,css,scss,md}\"",
+    "make-icons": "electron-icon-maker --input=./public/assets/capybara-longBreak.png --output=./build"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
@@ -26,6 +29,10 @@
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
     "copy-webpack-plugin": "^12.0.2",
+    "cross-env": "^7.0.3",
+    "electron": "^34.1.1",
+    "electron-builder": "^25.1.8",
+    "electron-icon-maker": "^0.0.5",
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
@@ -34,5 +41,33 @@
     "typescript": "^5.7.3",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1"
+  },
+  "build": {
+    "appId": "com.electron.capybara-pomodoro",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "mac": {
+      "icon": "public/assets/capybara-longBreak.png",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "public/assets/capybara-longBreak.png",
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "icon": "public/assets/capybara-longBreak.png",
+      "target": [
+        "AppImage"
+      ]
+    }
   }
 }
