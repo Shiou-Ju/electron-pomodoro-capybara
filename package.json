@@ -1,0 +1,33 @@
+{
+  "name": "electron-pomodoro-capybara",
+  "version": "1.0.0",
+  "main": "dist/main.js",
+  "repository": "git@github.com:Shiou-Ju/electron-pomodoro-capybara.git",
+  "author": "Bamboo <75402531+Shiou-Ju@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^34.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "webpack --config webpack.renderer.config.js && tsc",
+    "package": "electron-builder"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.0",
+    "eslint": "^9.20.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "prettier": "^3.5.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.7.3",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
+  }
+}
