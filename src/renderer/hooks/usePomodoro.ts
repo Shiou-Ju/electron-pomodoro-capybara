@@ -25,6 +25,7 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
     isRunning: false,
     completedPomodoros: 0,
     cycleCount: 0,
+    startTime: 0,
   });
 
   const startTimer = useCallback(() => {
@@ -45,20 +46,37 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
   }, [settings.focusTime]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let animationFrameId: number;
+    let lastTime = Date.now();
 
-    if (state.isRunning && state.timeLeft > 0) {
-      interval = setInterval(() => {
-        setState((prev) => ({ ...prev, timeLeft: prev.timeLeft - 1 }));
-      }, 1000);
-    } else if (state.timeLeft === 0) {
-      // 時間到，切換模式
-      const nextState = getNextState(state, settings);
-      setState(nextState);
+    const updateTimer = () => {
+      if (state.isRunning && state.timeLeft > 0) {
+        const currentTime = Date.now();
+        const deltaTime = Math.floor((currentTime - lastTime) / 1000);
+
+        if (deltaTime >= 1) {
+          setState(prev => ({
+            ...prev,
+            timeLeft: Math.max(0, prev.timeLeft - deltaTime)
+          }));
+          lastTime = currentTime;
+        }
+
+        animationFrameId = requestAnimationFrame(updateTimer);
+      }
+    };
+
+    if (state.isRunning) {
+      lastTime = Date.now();
+      animationFrameId = requestAnimationFrame(updateTimer);
     }
 
-    return () => clearInterval(interval);
-  }, [state.isRunning, state.timeLeft, settings]);
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [state.isRunning, state.timeLeft]);
 
   return {
     state,
@@ -68,6 +86,7 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
   };
 };
 
+// TODO: 這個 function not used
 function getNextState(
   currentState: PomodoroState,
   settings: PomodoroSettings,
@@ -85,6 +104,7 @@ function getNextState(
         isRunning: false,
         completedPomodoros: newCompletedPomodoros,
         cycleCount: 0,
+        startTime: 0,
       };
     }
 
@@ -94,6 +114,7 @@ function getNextState(
       isRunning: false,
       completedPomodoros: newCompletedPomodoros,
       cycleCount: newCycleCount,
+      startTime: 0,
     };
   }
 
@@ -103,5 +124,6 @@ function getNextState(
     isRunning: false,
     completedPomodoros: completedPomodoros,
     cycleCount: cycleCount,
+    startTime: 0,
   };
 }

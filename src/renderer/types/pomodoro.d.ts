@@ -6,6 +6,7 @@ export interface PomodoroState {
   isRunning: boolean;
   completedPomodoros: number;
   cycleCount: number;
+  startTime: number;
 }
 
 export interface PomodoroSettings {
