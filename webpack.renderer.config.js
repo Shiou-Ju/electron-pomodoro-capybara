@@ -32,6 +32,10 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { 
+          from: 'src/renderer/index.html',
+          to: path.resolve(__dirname, 'dist/renderer') 
+        },
+        { 
           from: 'public', 
           to: path.resolve(__dirname, 'dist/renderer') 
         },

@@ -1,6 +1,7 @@
 {
   "name": "electron-pomodoro-capybara",
-  "version": "1.1.0",
+  "productName": "卡皮巴拉番茄鐘",
+  "version": "1.2.0",
   "main": "dist/main.js",
   "repository": "git@github.com:Shiou-Ju/electron-pomodoro-capybara.git",
   "author": "Bamboo <75402531+Shiou-Ju@users.noreply.github.com>",
@@ -13,7 +14,7 @@
     "react-dom": "^19.0.0"
   },
   "scripts": {
-    "dev": "concurrently \"yarn watch\" \"yarn start\"",
+    "dev": "rm -rf dist && cross-env NODE_ENV=development webpack --config webpack.renderer.config.js && tsc && concurrently \"yarn watch\" \"yarn start\"",
     "watch": "webpack --config webpack.renderer.config.js --watch & tsc --watch",
     "start": "cross-env NODE_ENV=development electron .",
     "build": "cross-env NODE_ENV=production webpack --config webpack.renderer.config.js && tsc",
@@ -36,7 +37,6 @@
     "electron": "^34.1.1",
     "electron-builder": "^25.1.8",
     "electron-icon-maker": "^0.0.5",
-    "electron-reload": "^2.0.0-alpha.1",
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
@@ -51,7 +51,8 @@
     "appId": "com.electron.capybara-pomodoro",
     "files": [
       "dist/**/*",
-      "package.json"
+      "package.json",
+      "public/**/*"
     ],
     "directories": {
       "output": "release"
@@ -60,8 +61,17 @@
       "icon": "public/assets/capybara-longBreak.png",
       "target": [
         "dmg"
-      ]
+      ],
+      "category": "public.app-category.productivity",
+      "notarize": false,
+      "darkModeSupport": true,
+      "extendInfo": {
+        "NSNotificationCenter": true
+      }
     },
+    "asarUnpack": [
+      "public/assets/*"
+    ],
     "win": {
       "icon": "public/assets/capybara-longBreak.png",
       "target": [

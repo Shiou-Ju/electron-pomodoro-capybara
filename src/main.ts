@@ -1,14 +1,30 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, Notification, ipcMain } from 'electron';
 import * as path from 'path';
 
-// 加入這段在檔案開頭
-if (process.env.NODE_ENV === 'development') {
-  require('electron-reload')(__dirname, {
-    electron: path.join(__dirname, '..', 'node_modules', '.bin', 'electron'),
-    hardResetMethod: 'exit',
-    forceHardReset: true
-  });
-}
+
+// 在 createWindow 函數之前加入這段
+ipcMain.on('show-notification', (_, { title, body }) => {
+  if (Notification.isSupported()) {
+    const notification = new Notification({ 
+      title, 
+      body,
+      silent: false,
+      icon: path.resolve(__dirname, '../public/assets/capybara-longBreak.png'),
+      timeoutType: 'default',
+      urgency: 'normal',
+      actions: [{
+        type: 'button',
+        text: '確定'
+      }]
+    });
+    
+    if (process.platform === 'darwin') {
+      app.setName('卡皮巴拉番茄鐘');
+    }
+    
+    notification.show();
+  }
+});
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -18,15 +34,14 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
-    },
-    icon: path.join(__dirname, '../public/assets/capybara-longBreak.png')
+      backgroundThrottling: false
+    }
   });
 
-  // TODO: 註解掉測試 release 是否有問題
-  // // 新增：設定應用程式圖示
   const isMac = process.platform === 'darwin';
-  const isDev = process.env.NODE_ENV === 'development';
-  if (isMac && isDev) {
+  
+  // 移除 isDev 判斷，只要是 macOS 就設定圖示
+  if (isMac) {
     app.dock.setIcon(path.resolve(__dirname, '../public/assets/capybara-longBreak.png'));
   }
 
@@ -36,11 +51,23 @@ function createWindow() {
     // TODO: if needed, open devtools
     // mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
+    // 使用 app.getAppPath() 來確保在打包後能正確找到檔案
+    const indexPath = path.join(app.getAppPath(), 'dist', 'renderer', 'index.html');
+    mainWindow.loadFile(indexPath);
+  }
+
+  // 檢查通知權限
+  if (Notification.isSupported()) {
+    console.log('系統支援通知功能');
   }
 }
 
 app.whenReady().then(() => {
+  if (process.platform === 'darwin') {
+    // 設定 macOS 的通知權限
+    app.setActivationPolicy('regular');
+  }
+  
   createWindow();
 
   app.on('activate', () => {

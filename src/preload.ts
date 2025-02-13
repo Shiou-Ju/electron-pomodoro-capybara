@@ -5,6 +5,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // 之後可以加入番茄鐘相關的功能
   getVersion: () => process.versions.electron,
   sendNotification: (title: string, body: string) => {
-    new Notification(title, { body });
+    ipcRenderer.send('show-notification', { title, body });
   },
 });

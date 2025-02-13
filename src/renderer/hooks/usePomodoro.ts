@@ -75,6 +75,16 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
     }
   }, [state.timeLeft, state, settings]);
 
+  useEffect(() => {
+    if (state.timeLeft === 0 && !state.isRunning) {
+      const message = state.mode === 'focus' ? '該休息一下嘍！' : '繼續努力～';
+      
+      setTimeout(() => {
+        window.electronAPI.sendNotification('卡皮巴拉番茄鐘', message);
+      }, 100);
+    }
+  }, [state.timeLeft, state.isRunning, state.mode]);
+
   return {
     state,
     startTimer,
