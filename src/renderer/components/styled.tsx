@@ -9,7 +9,7 @@ export const Container = styled.div`
   max-width: 800px;
   max-height: 600px;
   margin: 0 auto;
-  padding: 0;
+  padding: 1rem 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,9 +28,11 @@ export const ContentWrapper = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   color: #2c3e50;
-  margin: 0.5rem 0;
+  margin: 0;
+  padding-top: 1rem;
+  font-weight: 600;
 `;
 
 export const Timer = styled.div`
