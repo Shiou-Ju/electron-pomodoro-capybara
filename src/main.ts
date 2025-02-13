@@ -1,6 +1,15 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 
+// 加入這段在檔案開頭
+if (process.env.NODE_ENV === 'development') {
+  require('electron-reload')(__dirname, {
+    electron: path.join(__dirname, '..', 'node_modules', '.bin', 'electron'),
+    hardResetMethod: 'exit',
+    forceHardReset: true
+  });
+}
+
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 600,
@@ -24,7 +33,8 @@ function createWindow() {
   // 開發環境使用
   if (process.env.NODE_ENV === 'development') {
     mainWindow.loadFile('dist/renderer/index.html');
-    mainWindow.webContents.openDevTools();
+    // TODO: if needed, open devtools
+    // mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
   }

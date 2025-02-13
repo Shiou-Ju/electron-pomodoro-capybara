@@ -4,19 +4,9 @@ import {
   PomodoroState,
   PomodoroSettings,
 } from '../types/pomodoro';
+import { getPomodoroSettings } from '../config/pomodoro.config';
 
-const DEFAULT_SETTINGS: PomodoroSettings = {
-  // TODO: for dev
-  // focusTime: 3,
-  focusTime: 25 * 60,
-  // TODO: for dev
-  // shortBreakTime: 3,
-  shortBreakTime: 5 * 60,
-  // TODO: for dev
-  // longBreakTime: 5,
-  longBreakTime: 10 * 60,
-  cyclesBeforeLongBreak: 4,
-};
+const DEFAULT_SETTINGS: PomodoroSettings = getPomodoroSettings();
 
 export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
   const [state, setState] = useState<PomodoroState>({
