@@ -4,54 +4,49 @@ import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 
 export const Container = styled.div`
-  max-width: 400px;
-  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  max-width: 800px;
+  max-height: 600px;
   margin: 0 auto;
-  padding: 2rem 1rem;
-  text-align: center;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
   overflow: hidden;
 `;
 
 export const ContentWrapper = styled.div`
   flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 2rem;
-`;
-
-export const ButtonGroup = styled.div`
-  display: flex;
-  gap: 1rem;
   justify-content: center;
+  gap: min(2rem, 4vh);
+  padding: 1rem;
 `;
 
 export const Title = styled.h1`
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   color: #2c3e50;
-  margin-bottom: 2rem;
+  margin: 0.5rem 0;
 `;
 
 export const Timer = styled.div`
-  font-size: 4rem;
+  font-size: 3.2rem;
   font-weight: bold;
   color: #3498db;
-  margin: 1rem 0;
+  margin-bottom: 1.5rem;
 `;
 
 export const Button = styled(motion.button)`
   background: #3498db;
   color: white;
   border: none;
-  padding: 0.8rem 1.5rem;
-  margin: 0.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
   cursor: pointer;
 
   &:hover {
@@ -59,9 +54,23 @@ export const Button = styled(motion.button)`
   }
 `;
 
+export const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+`;
+
 export const CapybaraImage = styled(motion.img)`
-  width: 150px;
-  height: 150px;
-  margin: 1rem auto;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 1rem;
   object-fit: contain;
 `;
+
+export const CompletedText = styled.p`
+  font-size: 1rem;
+  color: #2c3e50;
+  margin: 0;
+`;
+

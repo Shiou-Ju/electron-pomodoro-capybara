@@ -8,6 +8,7 @@ import {
   CapybaraImage,
   ContentWrapper,
   ButtonGroup,
+  CompletedText,
 } from './components/styled';
 import { AnimatePresence } from 'framer-motion';
 
@@ -66,7 +67,7 @@ const App: React.FC = () => {
           </Button>
         </ButtonGroup>
 
-        <p>完成的番茄鐘: {state.completedPomodoros}</p>
+        <CompletedText>完成的番茄鐘: {state.completedPomodoros}</CompletedText>
       </ContentWrapper>
     </Container>
   );
