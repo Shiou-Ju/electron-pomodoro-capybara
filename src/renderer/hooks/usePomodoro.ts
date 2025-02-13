@@ -68,6 +68,13 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
     };
   }, [state.isRunning, state.timeLeft]);
 
+  useEffect(() => {
+    if (state.timeLeft === 0) {
+      const nextState = getNextState(state, settings);
+      setState(nextState);
+    }
+  }, [state.timeLeft, state, settings]);
+
   return {
     state,
     startTimer,
