@@ -1,0 +1,4 @@
+CFBundleDisplayName = "Capybara Pomodoro";
+CFBundleName = "Capybara Pomodoro";
+CFBundleGetInfoString = "Capybara Pomodoro Timer";
+NSHumanReadableCopyright = "Copyright © 2024 Bamboo"; 

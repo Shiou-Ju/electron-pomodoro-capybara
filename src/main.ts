@@ -31,13 +31,15 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
       backgroundThrottling: false
-    }
+    },
+    backgroundColor: '#FFFFFF',  // 添加背景色
+    show: false  // 先不顯示視窗
   });
 
   const isMac = process.platform === 'darwin';
   
   if (isMac) {
-    app.setName('卡皮巴拉番茄鐘');
+    app.setName('Capybara Pomodoro');  // 使用英文名稱
     app.dock.setIcon(path.resolve(__dirname, '../public/assets/capybara-longBreak.png'));
   }
 
@@ -51,6 +53,11 @@ function createWindow() {
     const indexPath = path.join(app.getAppPath(), 'dist', 'renderer', 'index.html');
     mainWindow.loadFile(indexPath);
   }
+
+  // 等待內容準備好再顯示
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
 
   // 檢查通知權限
   if (Notification.isSupported()) {

@@ -1,7 +1,8 @@
 {
   "name": "electron-pomodoro-capybara",
-  "productName": "卡皮巴拉番茄鐘",
-  "version": "1.2.1",
+  "productName": "Capybara Pomodoro",
+  "version": "1.2.2",
+  "description": "A simple pomodoro timer with capybara",
   "main": "dist/main.js",
   "repository": "git@github.com:Shiou-Ju/electron-pomodoro-capybara.git",
   "author": "Bamboo <75402531+Shiou-Ju@users.noreply.github.com>",
@@ -63,13 +64,9 @@
         "dmg"
       ],
       "category": "public.app-category.productivity",
-      "notarize": false,
-      "darkModeSupport": true,
       "extendInfo": {
         "LSApplicationCategoryType": "public.app-category.productivity",
-        "CFBundleLocalizations": ["en", "zh_TW"],
-        "CFBundleName": "卡皮巴拉番茄鐘",
-        "CFBundleDisplayName": "卡皮巴拉番茄鐘"
+        "CFBundleLocalizations": ["en", "zh_TW"]
       }
     },
     "asarUnpack": [
