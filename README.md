@@ -19,9 +19,21 @@
 
 
 
+# app name issue
+但是我看另外一款 app 
 
+他在資料夾是`番茄鐘`
 
+但是我在 spotlight 打 tomato 找得到他？ 
 
+## 解釋
+在 macOS 平台上，應用程序的名稱在不同情況下可能會有所不同。具體如下：
 
+* 在 Finder 中，應用程序的名稱是根據 `productName` 定義的，即「卡皮巴拉番茄鐘」。
+* 在 Spotlight 搜尋時，系統會使用以下關鍵字進行匹配：
+  + capybara（來自 InfoPlist.strings）
+  + pomodoro（來自 InfoPlist.strings）
+  + 卡皮巴拉（來自 productName）
+  + 番茄鐘（來自 productName）
 
 

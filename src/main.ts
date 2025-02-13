@@ -18,10 +18,6 @@ ipcMain.on('show-notification', (_, { title, body }) => {
       }]
     });
     
-    if (process.platform === 'darwin') {
-      app.setName('卡皮巴拉番茄鐘');
-    }
-    
     notification.show();
   }
 });
@@ -40,8 +36,8 @@ function createWindow() {
 
   const isMac = process.platform === 'darwin';
   
-  // 移除 isDev 判斷，只要是 macOS 就設定圖示
   if (isMac) {
+    app.setName('卡皮巴拉番茄鐘');
     app.dock.setIcon(path.resolve(__dirname, '../public/assets/capybara-longBreak.png'));
   }
 
