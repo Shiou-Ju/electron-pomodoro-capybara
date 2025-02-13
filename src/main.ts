@@ -24,8 +24,8 @@ ipcMain.on('show-notification', (_, { title, body }) => {
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 600,
-    height: 1000,
+    width: 800,
+    height: 600,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
