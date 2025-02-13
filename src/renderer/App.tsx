@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePomodoro } from './hooks/usePomodoro';
 import {
   Container,
@@ -14,6 +14,7 @@ import { AnimatePresence } from 'framer-motion';
 
 const App: React.FC = () => {
   const { state, startTimer, pauseTimer, resetTimer } = usePomodoro();
+  const [layout, setLayout] = useState<'portrait' | 'landscape'>('landscape');
 
   useEffect(() => {
     if (state.timeLeft === 0) {
@@ -22,6 +23,13 @@ const App: React.FC = () => {
       window.electronAPI.sendNotification('卡皮巴拉番茄鐘', message);
     }
   }, [state.timeLeft, state.mode]);
+
+  useEffect(() => {
+    // 監聽來自 main process 的切換信號
+    window.electronAPI.onToggleLayout(() => {
+      setLayout(prev => prev === 'portrait' ? 'landscape' : 'portrait');
+    });
+  }, []);
 
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
@@ -32,8 +40,8 @@ const App: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Title>卡皮巴拉番茄鐘</Title>
+    <Container layout={layout}>
+      <Title layout={layout}>卡皮巴拉番茄鐘</Title>
 
       <ContentWrapper>
         <AnimatePresence mode="wait">

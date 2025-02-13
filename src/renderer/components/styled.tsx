@@ -2,12 +2,17 @@
 
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
+import { layouts } from '../themes/layouts';
 
-export const Container = styled.div`
+interface ThemeProps {
+  layout: 'portrait' | 'landscape';
+}
+
+export const Container = styled.div<ThemeProps>`
   width: 100%;
-  height: 100%;
-  max-width: 800px;
-  max-height: 600px;
+  height: 100vh;
+  max-width: ${({ layout }) => layouts[layout].styles.container.maxWidth};
+  min-height: ${({ layout }) => layouts[layout].styles.container.minHeight};
   margin: 0 auto;
   padding: 1rem 0 0 0;
   display: flex;
@@ -27,12 +32,13 @@ export const ContentWrapper = styled.div`
   padding: 1rem;
 `;
 
-export const Title = styled.h1`
-  font-size: 2.2rem;
+export const Title = styled.h1<ThemeProps>`
+  font-size: ${({ layout }) => layouts[layout].styles.title.fontSize};
   color: #2c3e50;
   margin: 0;
   padding-top: 1rem;
   font-weight: 600;
+  margin-bottom: ${({ layout }) => layouts[layout].styles.title.marginBottom};
 `;
 
 export const Timer = styled.div`
