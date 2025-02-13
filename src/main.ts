@@ -1,5 +1,6 @@
-import { app, BrowserWindow, Notification, ipcMain } from 'electron';
+import { app, BrowserWindow, Notification, ipcMain, globalShortcut } from 'electron';
 import * as path from 'path';
+import { layouts } from './renderer/themes/layouts';
 
 
 // 在 createWindow 函數之前加入這段
@@ -22,18 +23,25 @@ ipcMain.on('show-notification', (_, { title, body }) => {
   }
 });
 
-function createWindow() {
+// 保存當前布局狀態
+let currentLayout: 'portrait' | 'landscape' = 'landscape';
+
+function createWindow(layoutType: 'portrait' | 'landscape' = 'landscape') {
+  currentLayout = layoutType;
+  const { width, height } = layouts[currentLayout].window;
+  
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width,
+    height,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
       backgroundThrottling: false
     },
-    backgroundColor: '#FFFFFF',  // 添加背景色
-    show: false  // 先不顯示視窗
+    backgroundColor: '#FFFFFF',
+    show: false,
+    resizable: false  // 防止用戶調整視窗大小
   });
 
   const isMac = process.platform === 'darwin';
@@ -63,6 +71,27 @@ function createWindow() {
   if (Notification.isSupported()) {
     console.log('系統支援通知功能');
   }
+
+  // 註冊快捷鍵
+  globalShortcut.register('CommandOrControl+L', () => {
+    const newLayout = currentLayout === 'portrait' ? 'landscape' : 'portrait';
+    const { width, height } = layouts[newLayout].window;
+    
+    // 調整視窗大小
+    mainWindow.setSize(width, height);
+    mainWindow.center();  // 重新置中
+    
+    // 更新布局狀態
+    currentLayout = newLayout;
+    
+    // 通知渲染進程
+    mainWindow.webContents.send('toggle-layout');
+  });
+
+  // 當視窗關閉時註銷快捷鍵
+  mainWindow.on('closed', () => {
+    globalShortcut.unregisterAll();
+  });
 }
 
 app.whenReady().then(() => {
