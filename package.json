@@ -1,7 +1,7 @@
 {
   "name": "electron-pomodoro-capybara",
   "productName": "Capybara Pomodoro",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "A simple pomodoro timer with capybara",
   "main": "dist/main.js",
   "repository": "git@github.com:Shiou-Ju/electron-pomodoro-capybara.git",
@@ -15,9 +15,10 @@
     "react-dom": "^19.0.0"
   },
   "scripts": {
-    "dev": "rm -rf dist && cross-env NODE_ENV=development webpack --config webpack.renderer.config.js && tsc && concurrently \"yarn watch\" \"yarn start\"",
-    "watch": "webpack --config webpack.renderer.config.js --watch & tsc --watch",
-    "start": "cross-env NODE_ENV=development electron .",
+    "dev": "rm -rf dist && cross-env NODE_ENV=development concurrently \"yarn watch:renderer\" \"yarn watch:main\" \"yarn start\"",
+    "watch:renderer": "webpack --config webpack.renderer.config.js --watch",
+    "watch:main": "tsc --watch",
+    "start": "cross-env NODE_ENV=development nodemon --watch dist/main.js --exec \"electron .\" --ext js,ts,tsx",
     "build": "cross-env NODE_ENV=production webpack --config webpack.renderer.config.js && tsc",
     "package": "cross-env NODE_ENV=production yarn build && electron-builder build --mac --win --linux",
     "package:mac": "yarn build && electron-builder build --mac",

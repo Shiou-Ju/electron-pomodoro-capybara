@@ -54,6 +54,11 @@ function createWindow(layoutType: 'portrait' | 'landscape' = 'landscape') {
   // 開發環境使用
   if (process.env.NODE_ENV === 'development') {
     mainWindow.loadFile('dist/renderer/index.html');
+    // 只保留錯誤重試的機制
+    mainWindow.webContents.on('did-fail-load', () => {
+      mainWindow.loadFile('dist/renderer/index.html');
+    });
+    
     // TODO: if needed, open devtools
     // mainWindow.webContents.openDevTools();
   } else {
