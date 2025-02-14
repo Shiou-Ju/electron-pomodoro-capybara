@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Notification, ipcMain, globalShortcut } from 'electron';
 import * as path from 'path';
 import { layouts } from './renderer/themes/layouts';
+import electronLocalshortcut from 'electron-localshortcut';
 
 
 // 在 createWindow 函數之前加入這段
@@ -73,24 +74,21 @@ function createWindow(layoutType: 'portrait' | 'landscape' = 'landscape') {
   }
 
   // 註冊快捷鍵
-  globalShortcut.register('CommandOrControl+L', () => {
+  electronLocalshortcut.register(mainWindow, 'CommandOrControl+L', () => {
     const newLayout = currentLayout === 'portrait' ? 'landscape' : 'portrait';
     const { width, height } = layouts[newLayout].window;
     
-    // 調整視窗大小
     mainWindow.setSize(width, height);
-    mainWindow.center();  // 重新置中
+    mainWindow.center();
     
-    // 更新布局狀態
     currentLayout = newLayout;
     
-    // 通知渲染進程
     mainWindow.webContents.send('toggle-layout');
   });
 
-  // 當視窗關閉時註銷快捷鍵
+  // 清理快捷鍵
   mainWindow.on('closed', () => {
-    globalShortcut.unregisterAll();
+    electronLocalshortcut.unregisterAll(mainWindow);
   });
 }
 

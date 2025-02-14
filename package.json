@@ -10,6 +10,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "electron-localshortcut": "^3.2.1",
     "framer-motion": "^12.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -66,7 +67,10 @@
       "category": "public.app-category.productivity",
       "extendInfo": {
         "LSApplicationCategoryType": "public.app-category.productivity",
-        "CFBundleLocalizations": ["en", "zh_TW"]
+        "CFBundleLocalizations": [
+          "en",
+          "zh_TW"
+        ]
       }
     },
     "asarUnpack": [
