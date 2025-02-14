@@ -87,7 +87,7 @@ function createWindow(layoutType: 'portrait' | 'landscape' = 'landscape') {
   });
 
   // 清理快捷鍵
-  mainWindow.on('closed', () => {
+  mainWindow.on('close', () => {
     electronLocalshortcut.unregisterAll(mainWindow);
   });
 }
