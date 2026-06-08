@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>卡皮巴拉番茄鐘 — 綜合版（B 石板炭灰 + 各模式微染色）</title>
+    <style>
+      :root {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+          sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 2rem;
+        background: #4b5563;
+        color: #f3f4f6;
+      }
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.6rem;
+      }
+      .intro {
+        margin: 0 0 1.5rem;
+        opacity: 0.9;
+        max-width: 70ch;
+        line-height: 1.55;
+      }
+      h2.section {
+        font-size: 1.05rem;
+        margin: 1.75rem 0 0.9rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      /* 全尺寸番茄鐘卡片，模擬實際 app（portrait 風格） */
+      .card {
+        width: 260px;
+        border-radius: 14px;
+        padding: 1.5rem 1rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        background: var(--bg);
+        color: var(--text);
+        border: 1px solid var(--surface);
+      }
+      .card .mode-tag {
+        font-size: 0.78rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--accent);
+        opacity: 0.95;
+      }
+      .card .title {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--text);
+      }
+      .card .capybara {
+        width: 96px;
+        height: 96px;
+        object-fit: contain;
+        border-radius: 12px;
+        background: var(--surface);
+      }
+      .card .timer {
+        font-size: 2.6rem;
+        font-weight: bold;
+        color: var(--accent);
+        letter-spacing: 1px;
+      }
+      .card .buttons {
+        display: flex;
+        gap: 0.75rem;
+      }
+      .card button {
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        background: var(--accent);
+        color: var(--btn-text);
+        transition: background 0.15s;
+      }
+      .card button:hover {
+        background: var(--accent-hover);
+      }
+      /* 模擬鍵盤焦點外框（focus-visible ring）：第一顆按鈕示意 */
+      .card button.focused {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+      .card .completed {
+        font-size: 0.85rem;
+        margin: 0;
+        color: var(--text);
+        opacity: 0.85;
+      }
+      .tokens {
+        font-size: 0.72rem;
+        opacity: 0.75;
+        margin-top: 0.55rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        line-height: 1.5;
+        max-width: 260px;
+      }
+      .note {
+        font-size: 0.82rem;
+        opacity: 0.85;
+        margin: 0.5rem 0 0;
+        max-width: 70ch;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>綜合版 · B 石板炭灰 + 各模式微染色</h1>
+    <p class="intro">
+      這是依你的選擇做的「綜合版」（第二張，原始
+      <code>dark-mode-preview.html</code> 不動）：以 <strong>石板炭灰</strong> 為統一底色，
+      三種模式各自的強調色套在「計時數字 + 按鈕」上 — 專注=紅、短休=綠、長休=藍。
+      第一顆按鈕示意鍵盤焦點外框（focus-ring）。下方亮色列供你決定「亮色是否也要各模式微染色」。
+      確認後我會把這組色值寫進 <code>src/renderer/themes/colors.ts</code>。
+    </p>
+
+    <h2 class="section">暗色 · 三種模式（石板底 #1a1d23）</h2>
+    <div class="row">
+      <!-- 暗 focus -->
+      <div>
+        <div
+          class="card"
+          style="
+            --bg: #1a1d23;
+            --surface: #262b33;
+            --text: #e4e6eb;
+            --accent: #e26a6a;
+            --accent-hover: #ec8585;
+            --btn-text: #1a0c0c;
+            --focus-ring: #ec8585;
+          "
+        >
+          <span class="mode-tag">專注 focus</span>
+          <p class="title">卡皮巴拉番茄鐘</p>
+          <img class="capybara" src="../public/assets/capybara-focus.png" alt="focus" />
+          <div class="timer">25:00</div>
+          <div class="buttons">
+            <button class="focused">開始</button>
+            <button>重置</button>
+          </div>
+          <p class="completed">完成的番茄鐘: 3</p>
+        </div>
+        <div class="tokens">
+          bg #1a1d23 · surface #262b33 · text #e4e6eb<br />
+          accent #e26a6a · hover #ec8585 · btn #1a0c0c
+        </div>
+      </div>
+
+      <!-- 暗 shortBreak -->
+      <div>
+        <div
+          class="card"
+          style="
+            --bg: #1a1d23;
+            --surface: #262b33;
+            --text: #e4e6eb;
+            --accent: #5fc28a;
+            --accent-hover: #7ad3a3;
+            --btn-text: #0a1a10;
+            --focus-ring: #7ad3a3;
+          "
+        >
+          <span class="mode-tag">短休 shortBreak</span>
+          <p class="title">卡皮巴拉番茄鐘</p>
+          <img class="capybara" src="../public/assets/capybara-shortBreak.png" alt="shortBreak" />
+          <div class="timer">05:00</div>
+          <div class="buttons">
+            <button class="focused">開始</button>
+            <button>重置</button>
+          </div>
+          <p class="completed">完成的番茄鐘: 3</p>
+        </div>
+        <div class="tokens">
+          bg #1a1d23 · surface #262b33 · text #e4e6eb<br />
+          accent #5fc28a · hover #7ad3a3 · btn #0a1a10
+        </div>
+      </div>
+
+      <!-- 暗 longBreak -->
+      <div>
+        <div
+          class="card"
+          style="
+            --bg: #1a1d23;
+            --surface: #262b33;
+            --text: #e4e6eb;
+            --accent: #4aa3e0;
+            --accent-hover: #5fb4ef;
+            --btn-text: #0b1320;
+            --focus-ring: #5fb4ef;
+          "
+        >
+          <span class="mode-tag">長休 longBreak</span>
+          <p class="title">卡皮巴拉番茄鐘</p>
+          <img class="capybara" src="../public/assets/capybara-longBreak.png" alt="longBreak" />
+          <div class="timer">10:00</div>
+          <div class="buttons">
+            <button class="focused">開始</button>
+            <button>重置</button>
+          </div>
+          <p class="completed">完成的番茄鐘: 3</p>
+        </div>
+        <div class="tokens">
+          bg #1a1d23 · surface #262b33 · text #e4e6eb<br />
+          accent #4aa3e0 · hover #5fb4ef · btn #0b1320
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section">亮色 · 三種模式（白底，供決定亮色是否同步微染色）</h2>
+    <div class="row">
+      <!-- 亮 focus -->
+      <div>
+        <div
+          class="card"
+          style="
+            --bg: #ffffff;
+            --surface: #f0f2f5;
+            --text: #2c3e50;
+            --accent: #e05555;
+            --accent-hover: #c94444;
+            --btn-text: #ffffff;
+            --focus-ring: #c94444;
+          "
+        >
+          <span class="mode-tag">專注 focus</span>
+          <p class="title">卡皮巴拉番茄鐘</p>
+          <img class="capybara" src="../public/assets/capybara-focus.png" alt="focus" />
+          <div class="timer">25:00</div>
+          <div class="buttons">
+            <button class="focused">開始</button>
+            <button>重置</button>
+          </div>
+          <p class="completed">完成的番茄鐘: 3</p>
+        </div>
+        <div class="tokens">accent #e05555 · hover #c94444</div>
+      </div>
+
+      <!-- 亮 shortBreak -->
+      <div>
+        <div
+          class="card"
+          style="
+            --bg: #ffffff;
+            --surface: #f0f2f5;
+            --text: #2c3e50;
+            --accent: #2faa6a;
+            --accent-hover: #27935b;
+            --btn-text: #ffffff;
+            --focus-ring: #27935b;
+          "
+        >
+          <span class="mode-tag">短休 shortBreak</span>
+          <p class="title">卡皮巴拉番茄鐘</p>
+          <img class="capybara" src="../public/assets/capybara-shortBreak.png" alt="shortBreak" />
+          <div class="timer">05:00</div>
+          <div class="buttons">
+            <button class="focused">開始</button>
+            <button>重置</button>
+          </div>
+          <p class="completed">完成的番茄鐘: 3</p>
+        </div>
+        <div class="tokens">accent #2faa6a · hover #27935b</div>
+      </div>
+
+      <!-- 亮 longBreak -->
+      <div>
+        <div
+          class="card"
+          style="
+            --bg: #ffffff;
+            --surface: #f0f2f5;
+            --text: #2c3e50;
+            --accent: #3498db;
+            --accent-hover: #2980b9;
+            --btn-text: #ffffff;
+            --focus-ring: #2980b9;
+          "
+        >
+          <span class="mode-tag">長休 longBreak</span>
+          <p class="title">卡皮巴拉番茄鐘</p>
+          <img class="capybara" src="../public/assets/capybara-longBreak.png" alt="longBreak" />
+          <div class="timer">10:00</div>
+          <div class="buttons">
+            <button class="focused">開始</button>
+            <button>重置</button>
+          </div>
+          <p class="completed">完成的番茄鐘: 3</p>
+        </div>
+        <div class="tokens">accent #3498db · hover #2980b9（沿用原藍）</div>
+      </div>
+    </div>
+
+    <p class="note">
+      決策點：(1) 暗色三模式色值是否照此採用、或要微調？ (2) 亮色要「跟著各模式微染色」(如上排)
+      還是「維持單一藍 #3498db」？告訴我後即進 Part B 寫入 <code>colors.ts</code>。
+    </p>
+  </body>
+</html>

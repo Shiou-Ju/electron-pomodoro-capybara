@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>卡皮巴拉番茄鐘 — 暗色候選預覽</title>
+    <style>
+      :root {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+          sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 2rem;
+        background: #6b7280;
+        color: #f3f4f6;
+      }
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.6rem;
+      }
+      .intro {
+        margin: 0 0 2rem;
+        opacity: 0.85;
+        max-width: 60ch;
+        line-height: 1.5;
+      }
+      .grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+      .candidate {
+        flex: 0 0 auto;
+      }
+      .candidate > h2 {
+        font-size: 1rem;
+        margin: 0 0 0.5rem;
+        font-weight: 600;
+      }
+      .candidate > .desc {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        margin: 0 0 0.75rem;
+        max-width: 30ch;
+        line-height: 1.4;
+      }
+
+      /* 番茄鐘卡片：模擬實際 app 版面（portrait 風格） */
+      .card {
+        width: 260px;
+        border-radius: 14px;
+        padding: 1.5rem 1rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        background: var(--bg);
+        color: var(--text);
+      }
+      .card .title {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--text);
+      }
+      .card .capybara {
+        width: 96px;
+        height: 96px;
+        object-fit: contain;
+        border-radius: 12px;
+        background: var(--surface);
+      }
+      .card .timer {
+        font-size: 2.6rem;
+        font-weight: bold;
+        color: var(--accent);
+        letter-spacing: 1px;
+      }
+      .card .buttons {
+        display: flex;
+        gap: 0.75rem;
+      }
+      .card button {
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        background: var(--accent);
+        color: var(--btn-text);
+      }
+      .card button:hover {
+        background: var(--accent-hover);
+      }
+      /* 模擬鍵盤焦點外框（focus-visible ring） */
+      .card button.focused {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+      .card .completed {
+        font-size: 0.85rem;
+        margin: 0;
+        color: var(--text);
+        opacity: 0.85;
+      }
+
+      .swatches {
+        display: flex;
+        gap: 4px;
+        margin-top: 0.6rem;
+      }
+      .swatches span {
+        width: 22px;
+        height: 22px;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .token-note {
+        font-size: 0.72rem;
+        opacity: 0.7;
+        margin-top: 0.4rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
+      /* 各模式微染色候選：三張小卡 */
+      .mode-row {
+        display: flex;
+        gap: 0.75rem;
+      }
+      .mini {
+        width: 120px;
+        border-radius: 12px;
+        padding: 0.9rem 0.6rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--bg);
+        color: var(--text);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+      }
+      .mini .timer {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--accent);
+      }
+      .mini .label {
+        font-size: 0.7rem;
+        opacity: 0.85;
+      }
+      .mini button {
+        border: none;
+        border-radius: 5px;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.75rem;
+        background: var(--accent);
+        color: var(--btn-text);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>卡皮巴拉番茄鐘 — 暗色候選預覽</h1>
+    <p class="intro">
+      這頁用來「一起決定」暗黑模式的色票（issue #11）。下面是同一套版面在不同暗色方案下的樣子，
+      右側 A/B 為「整體單一暗色」兩種風格，C 示範「各模式微染色」。每張卡含模擬的鍵盤焦點外框。
+      決定後我會把選定色票寫進 <code>src/renderer/themes/colors.ts</code>。
+    </p>
+
+    <div class="grid">
+      <!-- 參考：目前亮色 -->
+      <div class="candidate">
+        <h2>參考 · 目前亮色</h2>
+        <p class="desc">現況硬編碼配色，供對照。</p>
+        <div
+          class="card"
+          style="
+            --bg: #ffffff;
+            --surface: #f0f2f5;
+            --text: #2c3e50;
+            --accent: #3498db;
+            --accent-hover: #2980b9;
+            --btn-text: #ffffff;
+            --focus-ring: #2980b9;
+          "
+        >
+          <p class="title">卡皮巴拉番茄鐘</p>
+          <img class="capybara" src="../public/assets/capybara-focus.png" alt="capybara" />
+          <div class="timer">25:00</div>
+          <div class="buttons">
+            <button class="focused">開始</button>
+            <button>重置</button>
+          </div>
+          <p class="completed">完成的番茄鐘: 3</p>
+        </div>
+        <div class="swatches">
+          <span style="background: #ffffff"></span>
+          <span style="background: #f0f2f5"></span>
+          <span style="background: #2c3e50"></span>
+          <span style="background: #3498db"></span>
+        </div>
+        <div class="token-note">#FFFFFF / #2c3e50 / #3498db</div>
+      </div>
+
+      <!-- 候選 A：純黑 OLED -->
+      <div class="candidate">
+        <h2>候選 A · 純黑 OLED</h2>
+        <p class="desc">接近純黑底，省電、對比強烈、現代感。強調色提亮以保可讀性。</p>
+        <div
+          class="card"
+          style="
+            --bg: #000000;
+            --surface: #141414;
+            --text: #ececec;
+            --accent: #4dabf7;
+            --accent-hover: #74c0fc;
+            --btn-text: #06121f;
+            --focus-ring: #74c0fc;
+          "
+        >
+          <p class="title">卡皮巴拉番茄鐘</p>
+          <img class="capybara" src="../public/assets/capybara-focus.png" alt="capybara" />
+          <div class="timer">25:00</div>
+          <div class="buttons">
+            <button class="focused">開始</button>
+            <button>重置</button>
+          </div>
+          <p class="completed">完成的番茄鐘: 3</p>
+        </div>
+        <div class="swatches">
+          <span style="background: #000000"></span>
+          <span style="background: #141414"></span>
+          <span style="background: #ececec"></span>
+          <span style="background: #4dabf7"></span>
+        </div>
+        <div class="token-note">#000000 / #ececec / #4dabf7</div>
+      </div>
+
+      <!-- 候選 B：石板炭灰 -->
+      <div class="candidate">
+        <h2>候選 B · 石板炭灰</h2>
+        <p class="desc">柔和深灰藍底，眼睛較舒服、層次明顯，較不像純黑那麼硬。</p>
+        <div
+          class="card"
+          style="
+            --bg: #1a1d23;
+            --surface: #262b33;
+            --text: #e4e6eb;
+            --accent: #4aa3e0;
+            --accent-hover: #5fb4ef;
+            --btn-text: #0b1320;
+            --focus-ring: #5fb4ef;
+          "
+        >
+          <p class="title">卡皮巴拉番茄鐘</p>
+          <img class="capybara" src="../public/assets/capybara-focus.png" alt="capybara" />
+          <div class="timer">25:00</div>
+          <div class="buttons">
+            <button class="focused">開始</button>
+            <button>重置</button>
+          </div>
+          <p class="completed">完成的番茄鐘: 3</p>
+        </div>
+        <div class="swatches">
+          <span style="background: #1a1d23"></span>
+          <span style="background: #262b33"></span>
+          <span style="background: #e4e6eb"></span>
+          <span style="background: #4aa3e0"></span>
+        </div>
+        <div class="token-note">#1a1d23 / #e4e6eb / #4aa3e0</div>
+      </div>
+
+      <!-- 候選 C：各模式微染色（以石板炭灰為底） -->
+      <div class="candidate">
+        <h2>候選 C · 各模式微染色</h2>
+        <p class="desc">
+          石板底 + 三種模式各自的強調色：專注=紅、短休=綠、長休=藍。
+          可疊加在 A 或 B 之上。
+        </p>
+        <div class="mode-row">
+          <div
+            class="mini"
+            style="
+              --bg: #231a1c;
+              --text: #e4e6eb;
+              --accent: #e26a6a;
+              --btn-text: #1a0c0c;
+            "
+          >
+            <div class="label">專注 focus</div>
+            <div class="timer">25:00</div>
+            <button>開始</button>
+          </div>
+          <div
+            class="mini"
+            style="
+              --bg: #1a231d;
+              --text: #e4e6eb;
+              --accent: #5fc28a;
+              --btn-text: #0a1a10;
+            "
+          >
+            <div class="label">短休 short</div>
+            <div class="timer">05:00</div>
+            <button>開始</button>
+          </div>
+          <div
+            class="mini"
+            style="
+              --bg: #1a1f23;
+              --text: #e4e6eb;
+              --accent: #4aa3e0;
+              --btn-text: #0b1320;
+            "
+          >
+            <div class="label">長休 long</div>
+            <div class="timer">10:00</div>
+            <button>開始</button>
+          </div>
+        </div>
+        <div class="token-note">focus #e26a6a / short #5fc28a / long #4aa3e0</div>
+      </div>
+    </div>
+  </body>
+</html>

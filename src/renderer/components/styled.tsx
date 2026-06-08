@@ -1,5 +1,3 @@
-// TODO: 有更好的實作方式吧？例如透過 CSS coding 來達成？
-
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 import { layouts } from '../themes/layouts';
@@ -9,6 +7,7 @@ interface ThemeProps {
 }
 
 export const Container = styled.div<ThemeProps>`
+  position: relative;
   width: 100%;
   height: 100vh;
   max-width: ${({ layout }) => layouts[layout].styles.container.maxWidth};
@@ -19,6 +18,8 @@ export const Container = styled.div<ThemeProps>`
   flex-direction: column;
   align-items: center;
   overflow: hidden;
+  background: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.textPrimary};
 `;
 
 export const ContentWrapper = styled.div`
@@ -34,7 +35,7 @@ export const ContentWrapper = styled.div`
 
 export const Title = styled.h1<ThemeProps>`
   font-size: ${({ layout }) => layouts[layout].styles.title.fontSize};
-  color: #2c3e50;
+  color: ${({ theme }) => theme.textPrimary};
   margin: 0;
   padding-top: 1rem;
   font-weight: 600;
@@ -44,13 +45,15 @@ export const Title = styled.h1<ThemeProps>`
 export const Timer = styled.div`
   font-size: 3.2rem;
   font-weight: bold;
-  color: #3498db;
+  color: ${({ theme }) => theme.accent};
   margin-bottom: 1.5rem;
 `;
 
-export const Button = styled(motion.button)`
-  background: #3498db;
-  color: white;
+export const Button = styled(motion.button, {
+  shouldForwardProp: (prop) => prop !== 'armed',
+})<{ armed?: boolean }>`
+  background: ${({ theme, armed }) => (armed ? theme.warning : theme.accent)};
+  color: ${({ theme, armed }) => (armed ? theme.warningText : theme.buttonText)};
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
@@ -58,7 +61,42 @@ export const Button = styled(motion.button)`
   cursor: pointer;
 
   &:hover {
-    background: #2980b9;
+    background: ${({ theme, armed }) =>
+      armed ? theme.warningHover : theme.accentHover};
+  }
+
+  &:focus-visible {
+    outline: 3px solid
+      ${({ theme, armed }) => (armed ? theme.warning : theme.focusRing)};
+    outline-offset: 2px;
+  }
+`;
+
+// 暗色 / 亮色切換鈕：右上角低調 icon 鈕
+export const ToggleButton = styled(motion.button)`
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: ${({ theme }) => theme.textPrimary};
+  border: none;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background: ${({ theme }) => theme.surface};
+  }
+
+  &:focus-visible {
+    outline: 3px solid ${({ theme }) => theme.focusRing};
+    outline-offset: 2px;
   }
 `;
 
@@ -78,7 +116,6 @@ export const CapybaraImage = styled(motion.img)`
 
 export const CompletedText = styled.p`
   font-size: 1rem;
-  color: #2c3e50;
+  color: ${({ theme }) => theme.textPrimary};
   margin: 0;
 `;
-
