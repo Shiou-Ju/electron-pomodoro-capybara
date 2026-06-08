@@ -35,6 +35,11 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
     }));
   }, [settings.focusTime]);
 
+  // 手動跳到下一階段（focus <-> break），重用 getNextState
+  const skipToNext = useCallback(() => {
+    setState((prev) => getNextState(prev, settings));
+  }, [settings]);
+
   useEffect(() => {
     let animationFrameId: number;
     let lastTime = Date.now();
@@ -45,9 +50,9 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
         const deltaTime = Math.floor((currentTime - lastTime) / 1000);
 
         if (deltaTime >= 1) {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
-            timeLeft: Math.max(0, prev.timeLeft - deltaTime)
+            timeLeft: Math.max(0, prev.timeLeft - deltaTime),
           }));
           lastTime = currentTime;
         }
@@ -78,7 +83,7 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
   useEffect(() => {
     if (state.timeLeft === 0 && !state.isRunning) {
       const message = state.mode === 'focus' ? '該休息一下嘍！' : '繼續努力～';
-      
+
       setTimeout(() => {
         window.electronAPI.sendNotification('卡皮巴拉番茄鐘', message);
       }, 100);
@@ -90,10 +95,11 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
     startTimer,
     pauseTimer,
     resetTimer,
+    skipToNext,
   };
 };
 
-// TODO: 這個 function not used
+// 計算下一階段狀態：由「timeLeft === 0 自動進階」的 effect 與 skipToNext 共用
 function getNextState(
   currentState: PomodoroState,
   settings: PomodoroSettings,
