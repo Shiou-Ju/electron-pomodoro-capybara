@@ -11,5 +11,8 @@ declare module '@emotion/react' {
     accentHover: string;
     buttonText: string;
     focusRing: string;
+    warning: string;
+    warningHover: string;
+    warningText: string;
   }
 }

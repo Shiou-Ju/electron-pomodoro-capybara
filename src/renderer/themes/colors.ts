@@ -58,5 +58,8 @@ export const buildTheme = (isDark: boolean, mode: PomodoroMode): Theme => {
     ...base,
     ...modeAccent,
     focusRing: modeAccent.accentHover,
+    warning: '#e74c3c',
+    warningHover: '#c0392b',
+    warningText: '#ffffff',
   };
 };

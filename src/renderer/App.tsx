@@ -154,6 +154,17 @@ const App: React.FC = () => {
         `}
       />
       <Container layout={layout}>
+        <ToggleButton
+          ref={darkButtonRef}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={toggleDark}
+          title="切換深色模式 (d)"
+          aria-label="切換深色模式"
+        >
+          {isDark ? '☀' : '☾'}
+        </ToggleButton>
+
         <Title layout={layout}>卡皮巴拉番茄鐘</Title>
 
         <ContentWrapper>
@@ -182,6 +193,7 @@ const App: React.FC = () => {
 
             <Button
               ref={resetButtonRef}
+              armed={resetArmed}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={requestReset}
@@ -189,16 +201,6 @@ const App: React.FC = () => {
             >
               {resetArmed ? '確認重置？' : '重置'}
             </Button>
-
-            <ToggleButton
-              ref={darkButtonRef}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={toggleDark}
-              title="切換深色模式 (d)"
-            >
-              {isDark ? '☀ 亮色' : '☾ 深色'}
-            </ToggleButton>
           </ButtonGroup>
 
           <CompletedText>

@@ -7,6 +7,7 @@ interface ThemeProps {
 }
 
 export const Container = styled.div<ThemeProps>`
+  position: relative;
   width: 100%;
   height: 100vh;
   max-width: ${({ layout }) => layouts[layout].styles.container.maxWidth};
@@ -48,9 +49,11 @@ export const Timer = styled.div`
   margin-bottom: 1.5rem;
 `;
 
-export const Button = styled(motion.button)`
-  background: ${({ theme }) => theme.accent};
-  color: ${({ theme }) => theme.buttonText};
+export const Button = styled(motion.button, {
+  shouldForwardProp: (prop) => prop !== 'armed',
+})<{ armed?: boolean }>`
+  background: ${({ theme, armed }) => (armed ? theme.warning : theme.accent)};
+  color: ${({ theme, armed }) => (armed ? theme.warningText : theme.buttonText)};
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
@@ -58,23 +61,33 @@ export const Button = styled(motion.button)`
   cursor: pointer;
 
   &:hover {
-    background: ${({ theme }) => theme.accentHover};
+    background: ${({ theme, armed }) =>
+      armed ? theme.warningHover : theme.accentHover};
   }
 
   &:focus-visible {
-    outline: 3px solid ${({ theme }) => theme.focusRing};
+    outline: 3px solid
+      ${({ theme, armed }) => (armed ? theme.warning : theme.focusRing)};
     outline-offset: 2px;
   }
 `;
 
-// 暗色 / 亮色切換鈕：較低調的外框樣式，與主要動作鈕區隔
+// 暗色 / 亮色切換鈕：右上角低調 icon 鈕
 export const ToggleButton = styled(motion.button)`
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   color: ${({ theme }) => theme.textPrimary};
-  border: 1px solid ${({ theme }) => theme.accent};
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  line-height: 1;
   cursor: pointer;
 
   &:hover {
