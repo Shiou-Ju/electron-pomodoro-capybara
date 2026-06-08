@@ -4,19 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 專案概述
 
-Capybara Pomodoro（卡皮巴拉番茄鐘）是一個 Electron + React 19 桌面番茄鐘應用，使用 TypeScript、Emotion（CSS-in-JS）與 Framer Motion。套件管理使用 **yarn**（有 `yarn.lock`）。
+Capybara Pomodoro（卡皮巴拉番茄鐘）是一個 Electron + React 19 桌面番茄鐘應用，使用 TypeScript、Emotion（CSS-in-JS）與 Framer Motion。套件管理使用 **pnpm**（有 `pnpm-lock.yaml`，`packageManager: pnpm@10.12.1`）。Electron 需在 `package.json` 的 `pnpm.onlyBuiltDependencies` 列入 `electron` 才會 build binary；`.npmrc` 設 `node-linker=hoisted` 避免多版本 @types 型別衝突。
 
 ## 常用指令
 
 ```bash
-yarn dev            # 開發：清 dist → 建 renderer bundle → tsc → 同時 watch + 啟動 electron
-yarn build          # 生產建置：webpack(renderer) + tsc(main/preload)
-yarn start          # 僅以 development 模式啟動 electron（需先 build 過）
-yarn format         # prettier 格式化 src 下所有檔案
+pnpm install        # 安裝相依（electron binary 會自動 build）
+pnpm dev            # 開發：清 dist → 建 renderer bundle → tsc → 同時 watch + 啟動 electron
+pnpm build          # 生產建置：webpack(renderer) + tsc(main/preload)
+pnpm start          # 僅以 development 模式啟動 electron（需先 build 過）
+pnpm format         # prettier 格式化 src 下所有檔案
 
 # 打包（electron-builder，輸出至 release/）
-yarn package        # mac + win + linux
-yarn package:mac    # 僅 macOS（dmg）
+pnpm package        # mac + win + linux
+pnpm package:mac    # 僅 macOS（dmg）
 
 npx tsc --noEmit    # 型別檢查（無專用 typecheck script）
 npx eslint src      # lint（eslint.config.mjs，整合 prettier）
@@ -35,7 +36,7 @@ npx eslint src      # lint（eslint.config.mjs，整合 prettier）
   - `dist/main.js` 是 app 進入點（package.json `main`）
   - `src/preload.ts` → `dist/preload.js`，main.ts 以 `path.join(__dirname, 'preload.js')` 載入
 
-修改 main 或 preload 後，純跑 webpack 不會生效，需 tsc 重編。`yarn dev` 的 watch 同時跑 `webpack --watch` 與 `tsc --watch` 處理這兩條線。
+修改 main 或 preload 後，純跑 webpack 不會生效，需 tsc 重編。`pnpm dev` 的 watch 同時跑 `webpack --watch` 與 `tsc --watch` 處理這兩條線。
 
 ## 執行期架構
 

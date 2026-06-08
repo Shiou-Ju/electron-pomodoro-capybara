@@ -7,6 +7,15 @@
   "repository": "git@github.com:Shiou-Ju/electron-pomodoro-capybara.git",
   "author": "Bamboo <75402531+Shiou-Ju@users.noreply.github.com>",
   "license": "MIT",
+  "packageManager": "pnpm@10.12.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron"
+    ],
+    "overrides": {
+      "@types/node": "22.13.1"
+    }
+  },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -16,14 +25,14 @@
     "react-dom": "^19.0.0"
   },
   "scripts": {
-    "dev": "rm -rf dist && cross-env NODE_ENV=development webpack --config webpack.renderer.config.js && tsc && concurrently \"yarn watch\" \"yarn start\"",
+    "dev": "rm -rf dist && cross-env NODE_ENV=development webpack --config webpack.renderer.config.js && tsc && concurrently \"pnpm watch\" \"pnpm start\"",
     "watch": "webpack --config webpack.renderer.config.js --watch & tsc --watch",
     "start": "cross-env NODE_ENV=development electron .",
     "build": "cross-env NODE_ENV=production webpack --config webpack.renderer.config.js && tsc",
-    "package": "cross-env NODE_ENV=production yarn build && electron-builder build --mac --win --linux",
-    "package:mac": "yarn build && electron-builder build --mac",
-    "package:win": "yarn build && electron-builder build --win",
-    "package:linux": "yarn build && electron-builder build --linux",
+    "package": "cross-env NODE_ENV=production pnpm build && electron-builder build --mac --win --linux",
+    "package:mac": "pnpm build && electron-builder build --mac",
+    "package:win": "pnpm build && electron-builder build --win",
+    "package:linux": "pnpm build && electron-builder build --linux",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,html,css,scss,md}\"",
     "make-icons": "electron-icon-maker --input=./public/assets/capybara-longBreak.png --output=./build"
   },
