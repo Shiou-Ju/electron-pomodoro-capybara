@@ -4,11 +4,14 @@ import { layouts } from './renderer/themes/layouts';
 import electronLocalshortcut from 'electron-localshortcut';
 
 
+// 記住目前還在畫面上的通知，供「c / Esc 一鍵關閉」使用
+const activeNotifications = new Set<Notification>();
+
 // 在 createWindow 函數之前加入這段
 ipcMain.on('show-notification', (_, { title, body }) => {
   if (Notification.isSupported()) {
-    const notification = new Notification({ 
-      title, 
+    const notification = new Notification({
+      title,
       body,
       silent: false,
       icon: path.resolve(__dirname, '../public/assets/capybara-longBreak.png'),
@@ -19,9 +22,19 @@ ipcMain.on('show-notification', (_, { title, body }) => {
         text: '確定'
       }]
     });
-    
+
+    activeNotifications.add(notification);
+    // banner 自動消失或被點掉時自清，避免留下無效 reference
+    notification.on('close', () => activeNotifications.delete(notification));
+
     notification.show();
   }
+});
+
+// 關閉所有還在畫面上的通知（鍵盤快捷鍵觸發）
+ipcMain.on('dismiss-notification', () => {
+  activeNotifications.forEach((n) => n.close());
+  activeNotifications.clear();
 });
 
 // 保存當前布局狀態

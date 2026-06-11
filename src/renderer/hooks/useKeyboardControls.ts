@@ -8,6 +8,7 @@ interface KeyboardControlsOptions {
   onSkipNext: () => void; // n：跳到下一階段
   onToggleDark: () => void; // d：切換暗黑模式
   onCancel: () => void; // Esc：取消（例如解除重置確認）
+  onDismissNotification: () => void; // c / Esc：關掉畫面上的通知
   focusRefs: FocusRef[]; // h/l、方向鍵在這些控制間移動焦點
 }
 
@@ -22,6 +23,7 @@ export const useKeyboardControls = ({
   onSkipNext,
   onToggleDark,
   onCancel,
+  onDismissNotification,
   focusRefs,
 }: KeyboardControlsOptions) => {
   useEffect(() => {
@@ -64,8 +66,15 @@ export const useKeyboardControls = ({
           e.preventDefault();
           onToggleDark();
           break;
+        // c：關掉畫面上的通知
+        case 'c':
+        case 'C':
+          e.preventDefault();
+          onDismissNotification();
+          break;
         case 'Escape':
           onCancel();
+          onDismissNotification();
           break;
         // 上一個焦點：h / k / 左 / 上
         case 'h':
@@ -100,6 +109,7 @@ export const useKeyboardControls = ({
     onSkipNext,
     onToggleDark,
     onCancel,
+    onDismissNotification,
     focusRefs,
   ]);
 };

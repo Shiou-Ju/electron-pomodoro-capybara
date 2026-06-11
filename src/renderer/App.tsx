@@ -110,6 +110,10 @@ const App: React.FC = () => {
     setIsDark((prev) => !prev);
   }, []);
 
+  const dismissNotification = useCallback(() => {
+    window.electronAPI.dismissNotification();
+  }, []);
+
   // 解除 timeout，避免 unmount 後觸發 setState
   useEffect(
     () => () => {
@@ -129,6 +133,7 @@ const App: React.FC = () => {
     onSkipNext: skipToNext,
     onToggleDark: toggleDark,
     onCancel: disarmReset,
+    onDismissNotification: dismissNotification,
     focusRefs,
   });
 
