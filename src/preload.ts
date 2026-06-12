@@ -7,6 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   sendNotification: (title: string, body: string) => {
     ipcRenderer.send('show-notification', { title, body });
   },
+  dismissNotification: () => {
+    ipcRenderer.send('dismiss-notification');
+  },
   onToggleLayout: (callback: () => void) => {
     ipcRenderer.on('toggle-layout', () => callback());
   }

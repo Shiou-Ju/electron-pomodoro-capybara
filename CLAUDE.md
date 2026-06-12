@@ -43,7 +43,7 @@ npx eslint src      # lint（eslint.config.mjs，整合 prettier）
 三個進程層，透過 contextBridge + IPC 溝通（`contextIsolation: true`、`nodeIntegration: false`）：
 
 1. **Main（`src/main.ts`）**：建立 `BrowserWindow`（`resizable: false`）、處理系統通知、註冊全域快捷鍵。
-2. **Preload（`src/preload.ts`）**：用 `contextBridge.exposeInMainWorld('electronAPI', ...)` 暴露 `getVersion` / `sendNotification` / `onToggleLayout` 給 renderer。型別定義在 `src/renderer/types/electron.d.ts`。
+2. **Preload（`src/preload.ts`）**：用 `contextBridge.exposeInMainWorld('electronAPI', ...)` 暴露 `getVersion` / `sendNotification` / `dismissNotification` / `onToggleLayout` 給 renderer。型別定義在 `src/renderer/types/electron.d.ts`。
 3. **Renderer（`src/renderer/`）**：React app，核心狀態在 `usePomodoro` hook。
 
 ### 番茄鐘狀態機（`src/renderer/hooks/usePomodoro.ts`）
@@ -56,6 +56,11 @@ npx eslint src      # lint（eslint.config.mjs，整合 prettier）
 - `CommandOrControl+L` 經 **electron-localshortcut**（非 `globalShortcut`）註冊在視窗上（`src/main.ts`）。觸發時 main 同時 `setSize` 改視窗尺寸並 `webContents.send('toggle-layout')` 通知 renderer 改 CSS 佈局。
 - 兩邊的視窗尺寸與樣式定義都來自 **`src/renderer/themes/layouts.ts`**（被 main 與 renderer 共用）。改佈局尺寸請改這一處。
 - 快捷鍵在視窗 `close` 事件 `unregisterAll`（順序很重要，需在視窗銷毀前）。
+
+### 通知關閉（`c` / `Esc`）
+
+- main（`src/main.ts`）用一個 `Set<Notification>` 記住目前在畫面上的通知；每個通知 `on('close')` 時自清。renderer 按 `c` 或 `Esc` → `dismissNotification()` → `dismiss-notification` IPC → main 把 Set 內所有通知 `close()`。
+- 純加法，**不更動兩處 `sendNotification` 的送出邏輯**（見下方「通知邏輯重複」）。
 
 ## 已知的待整理處（與 main 分支現況相關）
 
