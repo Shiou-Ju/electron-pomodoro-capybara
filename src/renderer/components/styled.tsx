@@ -55,6 +55,7 @@ export const Button = styled(motion.button, {
   background: ${({ theme, armed }) => (armed ? theme.warning : theme.accent)};
   color: ${({ theme, armed }) => (armed ? theme.warningText : theme.buttonText)};
   border: none;
+  min-width: 7.5rem;
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
   font-size: 0.9rem;
