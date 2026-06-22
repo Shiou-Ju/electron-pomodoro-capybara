@@ -33,6 +33,8 @@
     "package:mac": "pnpm build && electron-builder build --mac",
     "package:win": "pnpm build && electron-builder build --win",
     "package:linux": "pnpm build && electron-builder build --linux",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,html,css,scss,md}\"",
     "make-icons": "electron-icon-maker --input=./public/assets/capybara-longBreak.png --output=./build"
   },
@@ -55,6 +57,7 @@
     "prettier": "^3.5.0",
     "ts-loader": "^9.5.2",
     "typescript": "^5.7.3",
+    "vitest": "^3.2.6",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1"
   },
@@ -62,6 +65,7 @@
     "appId": "com.electron.capybara-pomodoro",
     "files": [
       "dist/**/*",
+      "!dist/**/*.test.*",
       "package.json",
       "public/**/*"
     ],

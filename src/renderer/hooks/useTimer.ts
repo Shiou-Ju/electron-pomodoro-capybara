@@ -1,16 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { TimerState } from '../types/timer';
 import { useCountdownTick } from './useCountdownTick';
+import { minutesToStreak, clampMinutes } from '../utils/streak';
 
 export const MIN_MINUTES = 1;
 export const MAX_MINUTES = 9999; // 最多 4 位數
 export const DEFAULT_MINUTES = 25;
-
-const clampMinutes = (n: number): number =>
-  Math.min(MAX_MINUTES, Math.max(MIN_MINUTES, Math.floor(n)));
-
-// 小數 2 位（issue #9：分鐘 / 25 累加進 streak）
-const round2 = (n: number): number => Math.round(n * 100) / 100;
 
 // onFinish：倒數歸零時回報本次獲得的 streak（分鐘 / 25），由 useStreak 統一累加
 export const useTimer = (onFinish?: (gained: number) => void) => {
@@ -46,7 +41,7 @@ export const useTimer = (onFinish?: (gained: number) => void) => {
   const setMinutes = useCallback((value: number) => {
     setState((prev) => {
       if (prev.hasStarted) return prev;
-      const minutes = clampMinutes(value);
+      const minutes = clampMinutes(value, MIN_MINUTES, MAX_MINUTES);
       return { ...prev, minutes, timeLeft: minutes * 60 };
     });
   }, []);
@@ -69,7 +64,7 @@ export const useTimer = (onFinish?: (gained: number) => void) => {
   // 倒數結束：回報 streak（交給 useStreak 累加）、回到設定狀態、發系統通知（不進下一階段）
   useEffect(() => {
     if (state.timeLeft === 0 && state.isRunning) {
-      const gained = round2(state.minutes / 25);
+      const gained = minutesToStreak(state.minutes);
 
       setState((prev) => ({
         ...prev,

@@ -1,9 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
+import { addStreak as addStreakValue } from '../utils/streak';
 
 const STREAK_STORAGE_KEY = 'capybara-streak';
-
-// 小數 2 位（番茄鐘每完成 +1；計時器 +分鐘/25）
-const round2 = (n: number): number => Math.round(n * 100) / 100;
 
 const loadStreak = (): number => {
   const raw = localStorage.getItem(STREAK_STORAGE_KEY);
@@ -19,7 +17,7 @@ export const useStreak = () => {
   const [streak, setStreak] = useState<number>(loadStreak);
 
   const addStreak = useCallback((amount: number) => {
-    setStreak((prev) => round2(prev + amount));
+    setStreak((prev) => addStreakValue(prev, amount));
   }, []);
 
   useEffect(() => {
