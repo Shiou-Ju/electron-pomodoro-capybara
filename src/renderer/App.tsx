@@ -353,7 +353,7 @@ const App: React.FC = () => {
             </Button>
           </ButtonGroup>
 
-          <StreakText>累積 streak: {streak.toFixed(2)}</StreakText>
+          <StreakText>完成的番茄鐘: {streak.toFixed(2)}</StreakText>
         </ContentWrapper>
       </Container>
     </ThemeProvider>
