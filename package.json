@@ -1,7 +1,7 @@
 {
   "name": "electron-pomodoro-capybara",
   "productName": "Capybara Pomodoro",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "A simple pomodoro timer with capybara",
   "main": "dist/main.js",
   "repository": "git@github.com:Shiou-Ju/electron-pomodoro-capybara.git",
