@@ -11,5 +11,4 @@ export interface TimerState {
   timeLeft: number; // 剩餘秒數
   isRunning: boolean; // 是否倒數中
   hasStarted: boolean; // 是否已開始（false = 設定狀態，顯示步進器）
-  streak: number; // 累積 streak（分鐘/25，小數 2 位）
 }

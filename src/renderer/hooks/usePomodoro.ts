@@ -1,11 +1,15 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { PomodoroState, PomodoroSettings } from '../types/pomodoro';
 import { getPomodoroSettings } from '../config/pomodoro.config';
 import { useCountdownTick } from './useCountdownTick';
 
 const DEFAULT_SETTINGS: PomodoroSettings = getPomodoroSettings();
 
-export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
+// onPomodoroComplete：每完成一次 focus 時呼叫（用於累加共用 streak）
+export const usePomodoro = (
+  settings: PomodoroSettings = DEFAULT_SETTINGS,
+  onPomodoroComplete?: () => void,
+) => {
   const [state, setState] = useState<PomodoroState>({
     mode: 'focus',
     timeLeft: settings.focusTime,
@@ -32,6 +36,9 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
     }));
   }, [settings.focusTime]);
 
+  const onCompleteRef = useRef(onPomodoroComplete);
+  onCompleteRef.current = onPomodoroComplete;
+
   // 手動跳到下一階段（focus <-> break），重用 getNextState
   const skipToNext = useCallback(() => {
     setState((prev) => getNextState(prev, settings));
@@ -46,6 +53,10 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
 
   useEffect(() => {
     if (state.timeLeft === 0) {
+      // 完成一次 focus → 累加共用 streak（+1，等同 25 分鐘）
+      if (state.mode === 'focus') {
+        onCompleteRef.current?.();
+      }
       const nextState = getNextState(state, settings);
       setState(nextState);
     }

@@ -74,21 +74,22 @@ export const Button = styled(motion.button, {
   }
 `;
 
-// 暗色 / 亮色切換鈕：右上角低調 icon 鈕
+// 暗色 / 亮色切換鈕：右上角低調文字鈕
 export const ToggleButton = styled(motion.button)`
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  width: 2rem;
   height: 2rem;
+  min-width: 2rem;
+  padding: 0 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   color: ${({ theme }) => theme.textPrimary};
   border: none;
-  border-radius: 50%;
-  font-size: 1.1rem;
+  border-radius: 1rem;
+  font-size: 0.95rem;
   line-height: 1;
   cursor: pointer;
 
@@ -198,7 +199,7 @@ export const MinutesInput = styled.input`
 export const ModeToggleButton = styled(motion.button)`
   position: absolute;
   top: 0.75rem;
-  right: 3rem;
+  right: 3.75rem;
   height: 2rem;
   min-width: 2rem;
   padding: 0 0.5rem;
@@ -209,7 +210,7 @@ export const ModeToggleButton = styled(motion.button)`
   color: ${({ theme }) => theme.textPrimary};
   border: none;
   border-radius: 1rem;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   line-height: 1;
   cursor: pointer;
 

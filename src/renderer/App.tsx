@@ -8,6 +8,7 @@ import React, {
 import { ThemeProvider, Global, css } from '@emotion/react';
 import { usePomodoro } from './hooks/usePomodoro';
 import { useTimer } from './hooks/useTimer';
+import { useStreak } from './hooks/useStreak';
 import { useKeyboardControls } from './hooks/useKeyboardControls';
 import { buildTheme } from './themes/colors';
 import {
@@ -20,7 +21,6 @@ import {
   CapybaraImage,
   ContentWrapper,
   ButtonGroup,
-  CompletedText,
   Stepper,
   StepButton,
   MinutesDisplay,
@@ -48,8 +48,9 @@ const getInitialAppMode = (): AppMode =>
   localStorage.getItem(APP_MODE_STORAGE_KEY) === 'timer' ? 'timer' : 'pomodoro';
 
 const App: React.FC = () => {
-  const pomodoro = usePomodoro();
-  const timer = useTimer();
+  const { streak, addStreak } = useStreak();
+  const pomodoro = usePomodoro(undefined, () => addStreak(1));
+  const timer = useTimer((gained) => addStreak(gained));
 
   const [appMode, setAppMode] = useState<AppMode>(getInitialAppMode);
   const [layout, setLayout] = useState<'portrait' | 'landscape'>('landscape');
@@ -226,8 +227,8 @@ const App: React.FC = () => {
   };
 
   const isRunning = isTimer ? timer.state.isRunning : pomodoro.state.isRunning;
+  // key 用實際圖片：番茄(focus) ⇄ 計時 同圖不重播動畫，切換才會即時無延遲
   const imageMode = isTimer ? 'focus' : pomodoro.state.mode;
-  const imageKey = isTimer ? 'timer' : pomodoro.state.mode;
   const title = isTimer ? '卡皮巴拉計時器' : '卡皮巴拉番茄鐘';
 
   return (
@@ -252,7 +253,7 @@ const App: React.FC = () => {
           title="切換番茄鐘 / 計時器 (Cmd+T)"
           aria-label="切換番茄鐘或計時器模式"
         >
-          {isTimer ? '⏱' : '🍅'}
+          {isTimer ? '計時' : '番茄'}
         </ModeToggleButton>
 
         <ToggleButton
@@ -263,7 +264,7 @@ const App: React.FC = () => {
           title="切換深色模式 (d)"
           aria-label="切換深色模式"
         >
-          {isDark ? '☀' : '☾'}
+          {isDark ? '暗' : '亮'}
         </ToggleButton>
 
         <Title layout={layout}>{title}</Title>
@@ -271,7 +272,7 @@ const App: React.FC = () => {
         <ContentWrapper>
           <AnimatePresence mode="wait">
             <CapybaraImage
-              key={imageKey}
+              key={imageMode}
               src={`assets/capybara-${imageMode}.png`}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -352,15 +353,7 @@ const App: React.FC = () => {
             </Button>
           </ButtonGroup>
 
-          {isTimer ? (
-            <StreakText>
-              累積 streak: {timer.state.streak.toFixed(2)}
-            </StreakText>
-          ) : (
-            <CompletedText>
-              完成的番茄鐘: {pomodoro.state.completedPomodoros}
-            </CompletedText>
-          )}
+          <StreakText>累積 streak: {streak.toFixed(2)}</StreakText>
         </ContentWrapper>
       </Container>
     </ThemeProvider>

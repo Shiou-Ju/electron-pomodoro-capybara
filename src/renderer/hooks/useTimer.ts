@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { TimerState } from '../types/timer';
 import { useCountdownTick } from './useCountdownTick';
 
@@ -6,28 +6,23 @@ export const MIN_MINUTES = 1;
 export const MAX_MINUTES = 9999; // 最多 4 位數
 export const DEFAULT_MINUTES = 25;
 
-const STREAK_STORAGE_KEY = 'capybara-streak';
-
 const clampMinutes = (n: number): number =>
   Math.min(MAX_MINUTES, Math.max(MIN_MINUTES, Math.floor(n)));
 
 // 小數 2 位（issue #9：分鐘 / 25 累加進 streak）
 const round2 = (n: number): number => Math.round(n * 100) / 100;
 
-const loadStreak = (): number => {
-  const raw = localStorage.getItem(STREAK_STORAGE_KEY);
-  const parsed = raw ? parseFloat(raw) : 0;
-  return Number.isFinite(parsed) ? parsed : 0;
-};
-
-export const useTimer = () => {
+// onFinish：倒數歸零時回報本次獲得的 streak（分鐘 / 25），由 useStreak 統一累加
+export const useTimer = (onFinish?: (gained: number) => void) => {
   const [state, setState] = useState<TimerState>(() => ({
     minutes: DEFAULT_MINUTES,
     timeLeft: DEFAULT_MINUTES * 60,
     isRunning: false,
     hasStarted: false,
-    streak: loadStreak(),
   }));
+
+  const onFinishRef = useRef(onFinish);
+  onFinishRef.current = onFinish;
 
   const startTimer = useCallback(() => {
     setState((prev) => ({ ...prev, isRunning: true, hasStarted: true }));
@@ -71,7 +66,7 @@ export const useTimer = () => {
     }));
   });
 
-  // 倒數結束：累加 streak、回到設定狀態、發系統通知（不進下一階段）
+  // 倒數結束：回報 streak（交給 useStreak 累加）、回到設定狀態、發系統通知（不進下一階段）
   useEffect(() => {
     if (state.timeLeft === 0 && state.isRunning) {
       const gained = round2(state.minutes / 25);
@@ -81,8 +76,9 @@ export const useTimer = () => {
         isRunning: false,
         hasStarted: false,
         timeLeft: prev.minutes * 60,
-        streak: round2(prev.streak + gained),
       }));
+
+      onFinishRef.current?.(gained);
 
       setTimeout(() => {
         window.electronAPI.sendNotification(
@@ -92,11 +88,6 @@ export const useTimer = () => {
       }, 100);
     }
   }, [state.timeLeft, state.isRunning, state.minutes]);
-
-  // 持久化 streak
-  useEffect(() => {
-    localStorage.setItem(STREAK_STORAGE_KEY, String(state.streak));
-  }, [state.streak]);
 
   return {
     state,
