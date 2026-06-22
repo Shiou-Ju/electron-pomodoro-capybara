@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>卡皮巴拉 — 計時器模式設計稿（分鐘倒數 + / − 設定）</title>
+    <style>
+      :root {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 2rem;
+        background: #4b5563;
+        color: #f3f4f6;
+      }
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.6rem;
+      }
+      .intro {
+        margin: 0 0 1.5rem;
+        opacity: 0.9;
+        max-width: 72ch;
+        line-height: 1.6;
+      }
+      h2.section {
+        font-size: 1.05rem;
+        margin: 1.75rem 0 0.9rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      /* 全尺寸卡片，模擬實際 app（portrait 風格），沿用 preview-2 的卡片結構 */
+      .card {
+        width: 260px;
+        border-radius: 14px;
+        padding: 1.5rem 1rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        background: var(--bg);
+        color: var(--text);
+        border: 1px solid var(--surface);
+      }
+      .card .mode-tag {
+        font-size: 0.78rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--accent);
+        opacity: 0.95;
+      }
+      .card .title {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--text);
+      }
+      .card .capybara {
+        width: 96px;
+        height: 96px;
+        object-fit: contain;
+        border-radius: 12px;
+        background: var(--surface);
+      }
+      .card .timer {
+        font-size: 2.6rem;
+        font-weight: bold;
+        color: var(--accent);
+        letter-spacing: 1px;
+      }
+
+      /* 設定列：− [分鐘] + 的步進器（僅在「未開始」時顯示） */
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+      .stepper .display {
+        font-size: 2.6rem;
+        font-weight: bold;
+        color: var(--accent);
+        letter-spacing: 1px;
+        min-width: 4.5rem;
+        text-align: center;
+      }
+      .stepper .unit {
+        font-size: 1rem;
+        font-weight: 500;
+        opacity: 0.7;
+        margin-left: 0.15rem;
+      }
+      .step-btn {
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+        line-height: 1;
+        background: var(--surface);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+      }
+      .step-btn:hover {
+        background: var(--accent);
+        color: var(--btn-text);
+      }
+      .step-btn.focused {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+
+      .card .buttons {
+        display: flex;
+        gap: 0.75rem;
+      }
+      .card button.action {
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        background: var(--accent);
+        color: var(--btn-text);
+        transition: background 0.15s;
+      }
+      .card button.action:hover {
+        background: var(--accent-hover);
+      }
+      .card button.action.focused {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 2px;
+      }
+      .card .completed {
+        font-size: 0.85rem;
+        margin: 0;
+        color: var(--text);
+        opacity: 0.85;
+      }
+      .state-label {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        margin: 0.5rem 0 0;
+        font-style: italic;
+      }
+      .tokens {
+        font-size: 0.72rem;
+        opacity: 0.75;
+        margin-top: 0.55rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        line-height: 1.5;
+        max-width: 260px;
+      }
+      .note {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        margin: 0.6rem 0 0;
+        max-width: 72ch;
+        line-height: 1.6;
+      }
+      ul.spec {
+        max-width: 72ch;
+        line-height: 1.65;
+        font-size: 0.9rem;
+      }
+      code {
+        background: rgba(0, 0, 0, 0.25);
+        padding: 0.05rem 0.35rem;
+        border-radius: 4px;
+        font-size: 0.85em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>計時器模式 · 設計稿（分鐘倒數，+ / − 設定）</h1>
+    <p class="intro">
+      延續
+      <code>dark-mode-preview-2.html</code>
+      的精神：<strong>石板炭灰</strong>底色 +
+      模式專屬強調色。計時器模式採用一組<strong>暖琥珀色</strong>，與專注（紅）/
+      短休（綠）/ 長休（藍）區隔。只支援<strong>分鐘</strong>，未開始時用
+      <code>−</code> / <code>+</code>
+      圓鈕加減分鐘數；開始後步進器收起、改顯示倒數。色值與初始/上下限皆可微調，確認後寫進
+      <code>src/renderer/themes/colors.ts</code>。
+    </p>
+
+    <h2 class="section">暗色 · 計時器模式（石板底 #1a1d23 · 琥珀強調）</h2>
+    <div class="row">
+      <!-- 暗 · 設定中（未開始）：顯示 − 25 + 步進器 -->
+      <div>
+        <div
+          class="card"
+          style="
+            --bg: #1a1d23;
+            --surface: #262b33;
+            --text: #e4e6eb;
+            --accent: #e0a44a;
+            --accent-hover: #eab866;
+            --btn-text: #1f1404;
+            --focus-ring: #eab866;
+          "
+        >
+          <span class="mode-tag">計時器 timer</span>
+          <p class="title">卡皮巴拉計時器</p>
+          <img
+            class="capybara"
+            src="../public/assets/capybara-focus.png"
+            alt="timer"
+          />
+          <div class="stepper">
+            <button class="step-btn">−</button>
+            <span class="display">25<span class="unit">分</span></span>
+            <button class="step-btn focused">+</button>
+          </div>
+          <div class="buttons">
+            <button class="action">開始</button>
+            <button class="action">重置</button>
+          </div>
+          <p class="state-label">狀態 A：設定中（未開始）— 顯示 − / + 步進器</p>
+        </div>
+        <div class="tokens">
+          accent #e0a44a · hover #eab866 · btn #1f1404<br />
+          + / − 鈕：surface 底 + accent 字，focus 時填滿
+        </div>
+      </div>
+
+      <!-- 暗 · 倒數中：步進器收起，顯示時間 -->
+      <div>
+        <div
+          class="card"
+          style="
+            --bg: #1a1d23;
+            --surface: #262b33;
+            --text: #e4e6eb;
+            --accent: #e0a44a;
+            --accent-hover: #eab866;
+            --btn-text: #1f1404;
+            --focus-ring: #eab866;
+          "
+        >
+          <span class="mode-tag">計時器 timer</span>
+          <p class="title">卡皮巴拉計時器</p>
+          <img
+            class="capybara"
+            src="../public/assets/capybara-focus.png"
+            alt="timer"
+          />
+          <div class="timer">18:42</div>
+          <div class="buttons">
+            <button class="action focused">暫停</button>
+            <button class="action">重置</button>
+          </div>
+          <p class="state-label">狀態 B：倒數中 — 步進器收起，僅顯示時間</p>
+        </div>
+        <div class="tokens">
+          倒數顯示沿用既有 <code>Timer</code> 樣式（3.2rem / accent 色）<br />
+          開始 → 文字變「暫停」，與番茄鐘一致
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section">亮色 · 計時器模式（白底 · 同組琥珀強調）</h2>
+    <div class="row">
+      <!-- 亮 · 設定中 -->
+      <div>
+        <div
+          class="card"
+          style="
+            --bg: #ffffff;
+            --surface: #f0f2f5;
+            --text: #2c3e50;
+            --accent: #d6912f;
+            --accent-hover: #c07f22;
+            --btn-text: #ffffff;
+            --focus-ring: #c07f22;
+          "
+        >
+          <span class="mode-tag">計時器 timer</span>
+          <p class="title">卡皮巴拉計時器</p>
+          <img
+            class="capybara"
+            src="../public/assets/capybara-focus.png"
+            alt="timer"
+          />
+          <div class="stepper">
+            <button class="step-btn">−</button>
+            <span class="display">25<span class="unit">分</span></span>
+            <button class="step-btn focused">+</button>
+          </div>
+          <div class="buttons">
+            <button class="action">開始</button>
+            <button class="action">重置</button>
+          </div>
+          <p class="state-label">狀態 A：設定中（未開始）</p>
+        </div>
+        <div class="tokens">
+          accent #d6912f · hover #c07f22（亮色略加深以保對比）
+        </div>
+      </div>
+
+      <!-- 亮 · 倒數中 -->
+      <div>
+        <div
+          class="card"
+          style="
+            --bg: #ffffff;
+            --surface: #f0f2f5;
+            --text: #2c3e50;
+            --accent: #d6912f;
+            --accent-hover: #c07f22;
+            --btn-text: #ffffff;
+            --focus-ring: #c07f22;
+          "
+        >
+          <span class="mode-tag">計時器 timer</span>
+          <p class="title">卡皮巴拉計時器</p>
+          <img
+            class="capybara"
+            src="../public/assets/capybara-focus.png"
+            alt="timer"
+          />
+          <div class="timer">18:42</div>
+          <div class="buttons">
+            <button class="action focused">暫停</button>
+            <button class="action">重置</button>
+          </div>
+          <p class="state-label">狀態 B：倒數中</p>
+        </div>
+        <div class="tokens">倒數中與番茄鐘排版一致，僅強調色不同</div>
+      </div>
+    </div>
+
+    <h2 class="section">互動規格（提案，待你確認）</h2>
+    <ul class="spec">
+      <li>
+        <strong>單位</strong>：只支援分鐘；內部仍以秒倒數（沿用
+        <code>usePomodoro</code> 的 rAF + Date.now delta）。
+      </li>
+      <li>
+        <strong>+ / − 設定</strong>：每次 ±1 分鐘（可改 ±5）。範圍建議
+        <code>1–90 分</code>，初始 <code>25 分</code>。
+      </li>
+      <li>
+        <strong>顯示切換</strong>：未開始 = 步進器（− 25
+        +）；按「開始」後步進器收起、顯示 <code>MM:SS</code> 倒數。
+      </li>
+      <li>
+        <strong>鍵盤</strong>：沿用 vim 風格焦點移動（h/l、方向鍵）；新增
+        <code>+</code> / <code>=</code> 加分鐘、<code>-</code> 減分鐘。<code
+          >p</code
+        >
+        開始/暫停、<code>r</code> 重置（二次確認）不變。
+      </li>
+      <li>
+        <strong>結束行為</strong>：時間到發系統通知（沿用現有
+        <code>sendNotification</code> + <code>c</code>/<code>Esc</code>
+        關閉）；不自動進入下一階段（與番茄鐘循環不同）。
+      </li>
+      <li>
+        <strong>streak（issue #9 原案）</strong>：時間到後把
+        <code>分鐘 / 25</code> 累加到 streak，取小數 2 位（例 12.5 分 =
+        +0.5）。<em>待確認是否本次一起做。</em>
+      </li>
+      <li>
+        <strong>圖片</strong>：先沿用
+        <code>capybara-focus.png</code>；若要專屬圖再加
+        <code>capybara-timer.png</code>。
+      </li>
+      <li>
+        <strong>模式切換</strong>：可比照
+        <code>Cmd+L</code> 佈局切換，加一個番茄鐘 ⇄ 計時器的切換鍵（待定）。
+      </li>
+    </ul>
+
+    <p class="note">
+      決策點：(1) 步進間距 ±1 還是 ±5？(2) 分鐘上下限（建議 1–90）？(3)
+      琥珀色採用或微調？ (4) streak 規則（#9 原案）本次是否一起做？(5) 番茄鐘 ⇄
+      計時器要用什麼方式切換？ 確認後我再進實作。
+    </p>
+  </body>
+</html>
