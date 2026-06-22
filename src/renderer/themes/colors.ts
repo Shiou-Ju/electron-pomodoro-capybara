@@ -1,10 +1,10 @@
 import type { Theme } from '@emotion/react';
-import { PomodoroMode } from '../types/pomodoro';
+import { AccentKey } from '../types/timer';
 
 /**
  * 各模式強調色（計時數字 + 按鈕）。
- * 依使用者決定「亮色跟暗色一樣」，明暗共用同一組強調色，
- * 只有底色 / surface / 文字色會隨明暗不同。
+ * 番茄鐘三模式明暗共用同一組強調色；計時器模式（timer）的暖琥珀色在亮色時略加深以保對比，
+ * 故 timer 另外分亮/暗兩組，由 buildTheme 依 isDark 取用。
  */
 interface ModeAccent {
   accent: string;
@@ -12,7 +12,7 @@ interface ModeAccent {
   buttonText: string;
 }
 
-const MODE_ACCENTS: Record<PomodoroMode, ModeAccent> = {
+const MODE_ACCENTS: Record<AccentKey, ModeAccent> = {
   focus: { accent: '#e26a6a', accentHover: '#ec8585', buttonText: '#1a0c0c' },
   shortBreak: {
     accent: '#5fc28a',
@@ -24,6 +24,15 @@ const MODE_ACCENTS: Record<PomodoroMode, ModeAccent> = {
     accentHover: '#5fb4ef',
     buttonText: '#0b1320',
   },
+  // 暗色版琥珀；亮色版見 TIMER_ACCENT_LIGHT
+  timer: { accent: '#e0a44a', accentHover: '#eab866', buttonText: '#1f1404' },
+};
+
+// 計時器亮色版：底色為白時，琥珀需加深才有足夠對比
+const TIMER_ACCENT_LIGHT: ModeAccent = {
+  accent: '#d6912f',
+  accentHover: '#c07f22',
+  buttonText: '#ffffff',
 };
 
 interface BasePalette {
@@ -49,9 +58,10 @@ const darkBase: BasePalette = {
  * 依「是否暗色」與「目前模式」組出 Emotion Theme。
  * 在 App.tsx 以 useMemo(buildTheme(isDark, state.mode)) 計算。
  */
-export const buildTheme = (isDark: boolean, mode: PomodoroMode): Theme => {
+export const buildTheme = (isDark: boolean, mode: AccentKey): Theme => {
   const base = isDark ? darkBase : lightBase;
-  const modeAccent = MODE_ACCENTS[mode];
+  const modeAccent =
+    mode === 'timer' && !isDark ? TIMER_ACCENT_LIGHT : MODE_ACCENTS[mode];
 
   return {
     isDark,

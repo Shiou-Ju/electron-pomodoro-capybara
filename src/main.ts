@@ -1,8 +1,7 @@
-import { app, BrowserWindow, Notification, ipcMain, globalShortcut } from 'electron';
+import { app, BrowserWindow, Notification, ipcMain } from 'electron';
 import * as path from 'path';
 import { layouts } from './renderer/themes/layouts';
 import electronLocalshortcut from 'electron-localshortcut';
-
 
 // 記住目前還在畫面上的通知，供「c / Esc 一鍵關閉」使用
 const activeNotifications = new Set<Notification>();
@@ -17,10 +16,12 @@ ipcMain.on('show-notification', (_, { title, body }) => {
       icon: path.resolve(__dirname, '../public/assets/capybara-longBreak.png'),
       timeoutType: 'default',
       urgency: 'normal',
-      actions: [{
-        type: 'button',
-        text: '確定'
-      }]
+      actions: [
+        {
+          type: 'button',
+          text: '確定',
+        },
+      ],
     });
 
     activeNotifications.add(notification);
@@ -43,7 +44,7 @@ let currentLayout: 'portrait' | 'landscape' = 'landscape';
 function createWindow(layoutType: 'portrait' | 'landscape' = 'landscape') {
   currentLayout = layoutType;
   const { width, height } = layouts[currentLayout].window;
-  
+
   const mainWindow = new BrowserWindow({
     width,
     height,
@@ -51,18 +52,20 @@ function createWindow(layoutType: 'portrait' | 'landscape' = 'landscape') {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
-      backgroundThrottling: false
+      backgroundThrottling: false,
     },
     backgroundColor: '#FFFFFF',
     show: false,
-    resizable: false  // 防止用戶調整視窗大小
+    resizable: false, // 防止用戶調整視窗大小
   });
 
   const isMac = process.platform === 'darwin';
-  
+
   if (isMac) {
-    app.setName('Capybara Pomodoro');  // 使用英文名稱
-    app.dock.setIcon(path.resolve(__dirname, '../public/assets/capybara-longBreak.png'));
+    app.setName('Capybara Pomodoro'); // 使用英文名稱
+    app.dock.setIcon(
+      path.resolve(__dirname, '../public/assets/capybara-longBreak.png'),
+    );
   }
 
   // 開發環境使用
@@ -72,7 +75,12 @@ function createWindow(layoutType: 'portrait' | 'landscape' = 'landscape') {
     // mainWindow.webContents.openDevTools();
   } else {
     // 使用 app.getAppPath() 來確保在打包後能正確找到檔案
-    const indexPath = path.join(app.getAppPath(), 'dist', 'renderer', 'index.html');
+    const indexPath = path.join(
+      app.getAppPath(),
+      'dist',
+      'renderer',
+      'index.html',
+    );
     mainWindow.loadFile(indexPath);
   }
 
@@ -90,13 +98,18 @@ function createWindow(layoutType: 'portrait' | 'landscape' = 'landscape') {
   electronLocalshortcut.register(mainWindow, 'CommandOrControl+L', () => {
     const newLayout = currentLayout === 'portrait' ? 'landscape' : 'portrait';
     const { width, height } = layouts[newLayout].window;
-    
+
     mainWindow.setSize(width, height);
     mainWindow.center();
-    
+
     currentLayout = newLayout;
-    
+
     mainWindow.webContents.send('toggle-layout');
+  });
+
+  // 切換番茄鐘 ⇄ 計時器模式（與佈局切換同模式，純通知 renderer）
+  electronLocalshortcut.register(mainWindow, 'CommandOrControl+T', () => {
+    mainWindow.webContents.send('toggle-mode');
   });
 
   // 清理快捷鍵
@@ -110,7 +123,7 @@ app.whenReady().then(() => {
     // 設定 macOS 的通知權限
     app.setActivationPolicy('regular');
   }
-  
+
   createWindow();
 
   app.on('activate', () => {

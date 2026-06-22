@@ -12,5 +12,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   onToggleLayout: (callback: () => void) => {
     ipcRenderer.on('toggle-layout', () => callback());
-  }
+  },
+  onToggleMode: (callback: () => void) => {
+    ipcRenderer.on('toggle-mode', () => callback());
+  },
 });
