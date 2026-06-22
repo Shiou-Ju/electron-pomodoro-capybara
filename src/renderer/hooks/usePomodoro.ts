@@ -1,10 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
-import {
-  PomodoroMode,
-  PomodoroState,
-  PomodoroSettings,
-} from '../types/pomodoro';
+import { PomodoroState, PomodoroSettings } from '../types/pomodoro';
 import { getPomodoroSettings } from '../config/pomodoro.config';
+import { useCountdownTick } from './useCountdownTick';
 
 const DEFAULT_SETTINGS: PomodoroSettings = getPomodoroSettings();
 
@@ -40,38 +37,12 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
     setState((prev) => getNextState(prev, settings));
   }, [settings]);
 
-  useEffect(() => {
-    let animationFrameId: number;
-    let lastTime = Date.now();
-
-    const updateTimer = () => {
-      if (state.isRunning && state.timeLeft > 0) {
-        const currentTime = Date.now();
-        const deltaTime = Math.floor((currentTime - lastTime) / 1000);
-
-        if (deltaTime >= 1) {
-          setState((prev) => ({
-            ...prev,
-            timeLeft: Math.max(0, prev.timeLeft - deltaTime),
-          }));
-          lastTime = currentTime;
-        }
-
-        animationFrameId = requestAnimationFrame(updateTimer);
-      }
-    };
-
-    if (state.isRunning) {
-      lastTime = Date.now();
-      animationFrameId = requestAnimationFrame(updateTimer);
-    }
-
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
-  }, [state.isRunning, state.timeLeft]);
+  useCountdownTick(state.isRunning, (deltaSeconds) => {
+    setState((prev) => ({
+      ...prev,
+      timeLeft: Math.max(0, prev.timeLeft - deltaSeconds),
+    }));
+  });
 
   useEffect(() => {
     if (state.timeLeft === 0) {
