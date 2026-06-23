@@ -10,6 +10,6 @@
     "lib": ["DOM", "ES2015"],
     "typeRoots": ["./src/renderer/types", "./node_modules/@types"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["**/*.test.ts"]
 }
-

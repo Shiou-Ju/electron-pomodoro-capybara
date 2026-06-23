@@ -1,7 +1,7 @@
 {
   "name": "electron-pomodoro-capybara",
   "productName": "Capybara Pomodoro",
-  "version": "1.4.1",
+  "version": "1.5.2",
   "description": "A simple pomodoro timer with capybara",
   "main": "dist/main.js",
   "repository": "git@github.com:Shiou-Ju/electron-pomodoro-capybara.git",
@@ -33,8 +33,14 @@
     "package:mac": "pnpm build && electron-builder build --mac",
     "package:win": "pnpm build && electron-builder build --win",
     "package:linux": "pnpm build && electron-builder build --linux",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,html,css,scss,md}\"",
-    "make-icons": "electron-icon-maker --input=./public/assets/capybara-longBreak.png --output=./build"
+    "make-icons": "electron-icon-maker --input=./public/assets/capybara-longBreak.png --output=./build",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css,scss,md,html}": "prettier --write"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
@@ -51,10 +57,13 @@
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.0",
     "ts-loader": "^9.5.2",
     "typescript": "^5.7.3",
+    "vitest": "^3.2.6",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1"
   },
@@ -62,6 +71,7 @@
     "appId": "com.electron.capybara-pomodoro",
     "files": [
       "dist/**/*",
+      "!dist/**/*.test.*",
       "package.json",
       "public/**/*"
     ],

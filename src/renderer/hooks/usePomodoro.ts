@@ -1,14 +1,15 @@
-import { useState, useCallback, useEffect } from 'react';
-import {
-  PomodoroMode,
-  PomodoroState,
-  PomodoroSettings,
-} from '../types/pomodoro';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { PomodoroState, PomodoroSettings } from '../types/pomodoro';
 import { getPomodoroSettings } from '../config/pomodoro.config';
+import { useCountdownTick } from './useCountdownTick';
 
 const DEFAULT_SETTINGS: PomodoroSettings = getPomodoroSettings();
 
-export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
+// onPomodoroComplete：每完成一次 focus 時呼叫（用於累加共用 streak）
+export const usePomodoro = (
+  settings: PomodoroSettings = DEFAULT_SETTINGS,
+  onPomodoroComplete?: () => void,
+) => {
   const [state, setState] = useState<PomodoroState>({
     mode: 'focus',
     timeLeft: settings.focusTime,
@@ -35,60 +36,33 @@ export const usePomodoro = (settings: PomodoroSettings = DEFAULT_SETTINGS) => {
     }));
   }, [settings.focusTime]);
 
+  const onCompleteRef = useRef(onPomodoroComplete);
+  onCompleteRef.current = onPomodoroComplete;
+
   // 手動跳到下一階段（focus <-> break），重用 getNextState
   const skipToNext = useCallback(() => {
     setState((prev) => getNextState(prev, settings));
   }, [settings]);
 
-  useEffect(() => {
-    let animationFrameId: number;
-    let lastTime = Date.now();
-
-    const updateTimer = () => {
-      if (state.isRunning && state.timeLeft > 0) {
-        const currentTime = Date.now();
-        const deltaTime = Math.floor((currentTime - lastTime) / 1000);
-
-        if (deltaTime >= 1) {
-          setState((prev) => ({
-            ...prev,
-            timeLeft: Math.max(0, prev.timeLeft - deltaTime),
-          }));
-          lastTime = currentTime;
-        }
-
-        animationFrameId = requestAnimationFrame(updateTimer);
-      }
-    };
-
-    if (state.isRunning) {
-      lastTime = Date.now();
-      animationFrameId = requestAnimationFrame(updateTimer);
-    }
-
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
-  }, [state.isRunning, state.timeLeft]);
+  useCountdownTick(state.isRunning, state.timeLeft, (deltaSeconds) => {
+    setState((prev) => ({
+      ...prev,
+      timeLeft: Math.max(0, prev.timeLeft - deltaSeconds),
+    }));
+  });
 
   useEffect(() => {
     if (state.timeLeft === 0) {
+      // 完成一次 focus → 累加共用 streak（+1，等同 25 分鐘）
+      if (state.mode === 'focus') {
+        onCompleteRef.current?.();
+      }
       const nextState = getNextState(state, settings);
       setState(nextState);
     }
   }, [state.timeLeft, state, settings]);
 
-  useEffect(() => {
-    if (state.timeLeft === 0 && !state.isRunning) {
-      const message = state.mode === 'focus' ? '該休息一下嘍！' : '繼續努力～';
-
-      setTimeout(() => {
-        window.electronAPI.sendNotification('卡皮巴拉番茄鐘', message);
-      }, 100);
-    }
-  }, [state.timeLeft, state.isRunning, state.mode]);
+  // 番茄鐘倒數結束通知由 App.tsx 的 effect 送出（此處不再重複，避免雙發）。
 
   return {
     state,

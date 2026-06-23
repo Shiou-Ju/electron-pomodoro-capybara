@@ -10,7 +10,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
   dismissNotification: () => {
     ipcRenderer.send('dismiss-notification');
   },
+  // 回傳 unsubscribe，供 renderer effect cleanup，避免重複註冊累積 listener
   onToggleLayout: (callback: () => void) => {
-    ipcRenderer.on('toggle-layout', () => callback());
-  }
+    const handler = () => callback();
+    ipcRenderer.on('toggle-layout', handler);
+    return () => ipcRenderer.removeListener('toggle-layout', handler);
+  },
+  onToggleMode: (callback: () => void) => {
+    const handler = () => callback();
+    ipcRenderer.on('toggle-mode', handler);
+    return () => ipcRenderer.removeListener('toggle-mode', handler);
+  },
 });
