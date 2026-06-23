@@ -46,15 +46,23 @@ export const useTimer = (onFinish?: (gained: number) => void) => {
     });
   }, []);
 
-  const increment = useCallback(() => {
-    setMinutes(state.minutes + 1);
-  }, [setMinutes, state.minutes]);
+  // 以函式式更新計算，避免落在同一批次時用到 stale 的 minutes
+  const adjustMinutes = useCallback((delta: number) => {
+    setState((prev) => {
+      if (prev.hasStarted) return prev;
+      const minutes = clampMinutes(
+        prev.minutes + delta,
+        MIN_MINUTES,
+        MAX_MINUTES,
+      );
+      return { ...prev, minutes, timeLeft: minutes * 60 };
+    });
+  }, []);
 
-  const decrement = useCallback(() => {
-    setMinutes(state.minutes - 1);
-  }, [setMinutes, state.minutes]);
+  const increment = useCallback(() => adjustMinutes(1), [adjustMinutes]);
+  const decrement = useCallback(() => adjustMinutes(-1), [adjustMinutes]);
 
-  useCountdownTick(state.isRunning, (deltaSeconds) => {
+  useCountdownTick(state.isRunning, state.timeLeft, (deltaSeconds) => {
     setState((prev) => ({
       ...prev,
       timeLeft: Math.max(0, prev.timeLeft - deltaSeconds),

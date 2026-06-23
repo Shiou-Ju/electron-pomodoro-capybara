@@ -44,7 +44,7 @@ export const usePomodoro = (
     setState((prev) => getNextState(prev, settings));
   }, [settings]);
 
-  useCountdownTick(state.isRunning, (deltaSeconds) => {
+  useCountdownTick(state.isRunning, state.timeLeft, (deltaSeconds) => {
     setState((prev) => ({
       ...prev,
       timeLeft: Math.max(0, prev.timeLeft - deltaSeconds),

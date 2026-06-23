@@ -8,10 +8,14 @@ import { useEffect, useRef } from 'react';
  */
 export const useCountdownTick = (
   isRunning: boolean,
+  timeLeft: number,
   onTick: (deltaSeconds: number) => void,
 ): void => {
   const onTickRef = useRef(onTick);
   onTickRef.current = onTick;
+  // 以 ref 取得最新 timeLeft，供迴圈在歸零時停止排幀（防呆，見下）
+  const timeLeftRef = useRef(timeLeft);
+  timeLeftRef.current = timeLeft;
 
   useEffect(() => {
     if (!isRunning) return;
@@ -25,10 +29,14 @@ export const useCountdownTick = (
 
       if (deltaTime >= 1) {
         onTickRef.current(deltaTime);
-        lastTime = currentTime;
+        // 保留不足一秒的餘量，避免每秒重新等滿一整秒造成系統性偏慢
+        lastTime += deltaTime * 1000;
       }
 
-      animationFrameId = requestAnimationFrame(update);
+      // 防呆：時間歸零即停止排下一幀，不依賴消費端一定把 isRunning 設 false
+      if (timeLeftRef.current > 0) {
+        animationFrameId = requestAnimationFrame(update);
+      }
     };
 
     animationFrameId = requestAnimationFrame(update);
