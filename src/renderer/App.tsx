@@ -66,6 +66,7 @@ const App: React.FC = () => {
   const modeButtonRef = useRef<HTMLButtonElement>(null);
   const darkButtonRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const cancelledRef = useRef(false); // 分鐘輸入是否被 Esc 取消
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // theme 同時依「明暗」與「目前模式」計算：計時器用琥珀，否則跟番茄鐘模式
@@ -182,17 +183,25 @@ const App: React.FC = () => {
   // gi：進入分鐘直接輸入（僅計時器設定狀態）
   const enterInput = useCallback(() => {
     if (!isTimer || timer.state.hasStarted) return;
+    cancelledRef.current = false;
     setInputValue(String(timer.state.minutes));
     setEditing(true);
   }, [isTimer, timer.state.hasStarted, timer.state.minutes]);
 
   const commitInput = useCallback(() => {
+    // Esc 取消後，unmount 觸發的 onBlur 不應再存檔
+    if (cancelledRef.current) {
+      cancelledRef.current = false;
+      setEditing(false);
+      return;
+    }
     const n = parseInt(inputValue, 10);
     if (!Number.isNaN(n)) timer.setMinutes(n);
     setEditing(false);
   }, [inputValue, timer]);
 
   const cancelInput = useCallback(() => {
+    cancelledRef.current = true;
     setEditing(false);
   }, []);
 
