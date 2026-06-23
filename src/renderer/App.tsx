@@ -99,10 +99,11 @@ const App: React.FC = () => {
   }, [isTimer, pomodoro.state.timeLeft, pomodoro.state.mode]);
 
   useEffect(() => {
-    // 監聽來自 main process 的切換信號
-    window.electronAPI.onToggleLayout(() => {
+    // 監聽來自 main process 的切換信號；回傳 unsubscribe 供 cleanup（避免重複註冊）
+    const unsubscribe = window.electronAPI.onToggleLayout(() => {
       setLayout((prev) => (prev === 'portrait' ? 'landscape' : 'portrait'));
     });
+    return unsubscribe;
   }, []);
 
   // 進入分鐘輸入時自動 focus 並全選
@@ -162,12 +163,17 @@ const App: React.FC = () => {
     setAppMode((prev) => (prev === 'timer' ? 'pomodoro' : 'timer'));
   }, [timer, pomodoro, disarmReset]);
 
-  // 監聽 Cmd+T 切換模式
+  // 以 ref 穩定 toggleMode，讓監聽 effect 只註冊一次（toggleMode 每 render 會重建）
+  const toggleModeRef = useRef(toggleMode);
+  toggleModeRef.current = toggleMode;
+
+  // 監聽 Cmd+T 切換模式（deps []，配合 cleanup 只註冊一次）
   useEffect(() => {
-    window.electronAPI.onToggleMode(() => {
-      toggleMode();
+    const unsubscribe = window.electronAPI.onToggleMode(() => {
+      toggleModeRef.current();
     });
-  }, [toggleMode]);
+    return unsubscribe;
+  }, []);
 
   const dismissNotification = useCallback(() => {
     window.electronAPI.dismissNotification();
