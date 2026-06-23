@@ -19,11 +19,15 @@ pnpm format         # prettier 格式化 src 下所有檔案
 pnpm package        # mac + win + linux
 pnpm package:mac    # 僅 macOS（dmg）
 
+pnpm test           # 單元測試（Vitest，跑一次）
+pnpm test:watch     # 單元測試 watch 模式
+
 npx tsc --noEmit    # 型別檢查（無專用 typecheck script）
-npx eslint src      # lint（eslint.config.mjs，整合 prettier）
 ```
 
-無測試框架。
+**Lint 現況**：`eslint.config.mjs` 仍是舊式（eslintrc）格式，在 ESLint 9 flat config 下實際不生效（`npx eslint src` 會回報全檔 ignored）。目前品質把關靠 `npx tsc --noEmit`（型別）＋ `pnpm format`（prettier）。
+
+**測試**：用 **Vitest**。純函式測試與其原始檔同放於 `src/renderer/utils/`（如 `streak.ts` / `streak.test.ts`）。`tsconfig.json` 以 `exclude: ["**/*.test.ts"]`、electron-builder `build.files` 以 `!dist/**/*.test.*` 確保測試檔不進 `dist`／打包。React hook 邏輯偏好抽成純函式再測（避免 DOM 環境）。
 
 ## 建置架構（兩段式編譯，關鍵）
 
@@ -43,8 +47,8 @@ npx eslint src      # lint（eslint.config.mjs，整合 prettier）
 三個進程層，透過 contextBridge + IPC 溝通（`contextIsolation: true`、`nodeIntegration: false`）：
 
 1. **Main（`src/main.ts`）**：建立 `BrowserWindow`（`resizable: false`）、處理系統通知、註冊全域快捷鍵。
-2. **Preload（`src/preload.ts`）**：用 `contextBridge.exposeInMainWorld('electronAPI', ...)` 暴露 `getVersion` / `sendNotification` / `dismissNotification` / `onToggleLayout` 給 renderer。型別定義在 `src/renderer/types/electron.d.ts`。
-3. **Renderer（`src/renderer/`）**：React app，核心狀態在 `usePomodoro` hook。
+2. **Preload（`src/preload.ts`）**：用 `contextBridge.exposeInMainWorld('electronAPI', ...)` 暴露 `getVersion` / `sendNotification` / `dismissNotification` / `onToggleLayout` / `onToggleMode` 給 renderer。型別定義在 `src/renderer/types/electron.d.ts`。
+3. **Renderer（`src/renderer/`）**：React app。`App.tsx` 持有 `appMode`（`'pomodoro' | 'timer'`，localStorage `capybara-app-mode`），同時掛載 `usePomodoro` 與 `useTimer` 兩個 hook，依 `appMode` 決定渲染哪一套並接線；計數由 `useStreak` 統一管理。倒數計時邏輯（rAF + `Date.now()` delta）抽在共用的 `useCountdownTick`，番茄鐘與計時器都用它。
 
 ### 番茄鐘狀態機（`src/renderer/hooks/usePomodoro.ts`）
 
@@ -62,11 +66,24 @@ npx eslint src      # lint（eslint.config.mjs，整合 prettier）
 - main（`src/main.ts`）用一個 `Set<Notification>` 記住目前在畫面上的通知；每個通知 `on('close')` 時自清。renderer 按 `c` 或 `Esc` → `dismissNotification()` → `dismiss-notification` IPC → main 把 Set 內所有通知 `close()`。
 - 純加法，**不更動兩處 `sendNotification` 的送出邏輯**（見下方「通知邏輯重複」）。
 
+### 計時器模式（`src/renderer/hooks/useTimer.ts`）
+
+- 有別於番茄鐘循環，計時器是**純倒數**：只支援分鐘（內部仍秒級倒數，用 `useCountdownTick`）。
+- 設定狀態（未開始）顯示步進器 `− 分 +`；`+/-`（鍵盤 `+`/`=`/`-`）±1 分，`gi`（vim 風格 g 前綴 chord，見 `useKeyboardControls`）進入直接輸入。範圍 `MIN_MINUTES`(1)–`MAX_MINUTES`(9999)。
+- `Cmd+T` 經 electron-localshortcut 註冊在視窗（`src/main.ts`，與 `Cmd+L` 同模式），`webContents.send('toggle-mode')` 通知 renderer 切 `appMode`；切換時暫停兩邊計時。
+- 強調色：計時器用暖琥珀，定義在 `src/renderer/themes/colors.ts`（`AccentKey = PomodoroMode | 'timer'`，亮色另有加深版）。
+- 結束時發系統通知但**不**自動進下一階段；圖片沿用 `capybara-focus.png`。
+
+### streak（`src/renderer/hooks/useStreak.ts` + `utils/streak.ts`）
+
+- 番茄鐘與計時器**共用**單一累積值，存 localStorage `capybara-streak`。番茄完成 +1、計時結束 +`分鐘/25`（25 分 = 1.00）。
+- 計算為純函式集中在 `src/renderer/utils/streak.ts`（`round2` / `minutesToStreak` / `addStreak` / `clampMinutes`），有對應單元測試。
+- 兩模式底部統一顯示「完成的番茄鐘: X.XX」（小數 2 位）。
+
 ## 已知的待整理處（與 main 分支現況相關）
 
-- **通知邏輯重複**：`App.tsx` 的 `useEffect` 與 `usePomodoro.ts` 內各有一份 `sendNotification`，兩者都在 `timeLeft === 0` 時觸發（當前分支 `fix/notification-not-last` 正在處理此類問題）。改通知行為時注意兩處。
+- **通知邏輯重複**：`App.tsx` 的 `useEffect` 與 `usePomodoro.ts` 內各有一份番茄鐘 `sendNotification`，兩者都在 `timeLeft === 0` 時觸發。改通知行為時注意兩處。
 - `usePomodoro.ts` 的 `getNextState` 被標註「not used」但實際上有被 effect 呼叫——修改前先確認實際引用。
-- `src/preload.ts` import 了 `ipcRenderer` 與 main.ts import 了 `globalShortcut` 但部分未使用。
 
 ## 平台慣例
 
