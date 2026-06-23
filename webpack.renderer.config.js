@@ -7,37 +7,39 @@ module.exports = {
   entry: './src/renderer/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist/renderer'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js'],
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
-        type: 'asset/resource'
-      }
-    ]
+        type: 'asset/resource',
+      },
+    ],
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+      'process.env.NODE_ENV': JSON.stringify(
+        process.env.NODE_ENV || 'development',
+      ),
     }),
     new CopyPlugin({
       patterns: [
-        { 
+        {
           from: 'src/renderer/index.html',
-          to: path.resolve(__dirname, 'dist/renderer') 
+          to: path.resolve(__dirname, 'dist/renderer'),
         },
-        { 
-          from: 'public', 
-          to: path.resolve(__dirname, 'dist/renderer') 
+        {
+          from: 'public',
+          to: path.resolve(__dirname, 'dist/renderer'),
         },
       ],
     }),

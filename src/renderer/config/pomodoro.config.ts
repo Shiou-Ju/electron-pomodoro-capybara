@@ -14,4 +14,4 @@ export const prodSettings = {
 
 export const getPomodoroSettings = () => {
   return process.env.NODE_ENV === 'production' ? prodSettings : devSettings;
-}; 
+};
