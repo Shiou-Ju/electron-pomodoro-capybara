@@ -82,7 +82,7 @@ npx tsc --noEmit    # 型別檢查（無專用 typecheck script）
 
 ## 已知的待整理處（與 main 分支現況相關）
 
-- **通知邏輯重複**：`App.tsx` 的 `useEffect` 與 `usePomodoro.ts` 內各有一份番茄鐘 `sendNotification`，兩者都在 `timeLeft === 0` 時觸發。改通知行為時注意兩處。
+- 番茄鐘倒數結束通知統一由 `App.tsx` 的 effect 送出；`usePomodoro.ts` 原本那份條件 `timeLeft===0 && !isRunning` 為永不成立的死碼，已移除（改通知行為只需改 `App.tsx` 一處）。
 - `usePomodoro.ts` 的 `getNextState` 被標註「not used」但實際上有被 effect 呼叫——修改前先確認實際引用。
 
 ## 平台慣例

@@ -62,15 +62,7 @@ export const usePomodoro = (
     }
   }, [state.timeLeft, state, settings]);
 
-  useEffect(() => {
-    if (state.timeLeft === 0 && !state.isRunning) {
-      const message = state.mode === 'focus' ? '該休息一下嘍！' : '繼續努力～';
-
-      setTimeout(() => {
-        window.electronAPI.sendNotification('卡皮巴拉番茄鐘', message);
-      }, 100);
-    }
-  }, [state.timeLeft, state.isRunning, state.mode]);
+  // 番茄鐘倒數結束通知由 App.tsx 的 effect 送出（此處不再重複，避免雙發）。
 
   return {
     state,
